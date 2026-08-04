@@ -341,6 +341,13 @@ footer .heart{color:var(--high-c)}
   color:#fff;transition:transform .85s cubic-bezier(.7,0,.2,1),opacity .85s;
 }
 #intro.done{transform:translateY(-100%);opacity:.4;pointer-events:none}
+/* static intro for reduced-motion users: same content, zero animation */
+#intro.static .fl{display:none}
+#intro.static .intro-mark,#intro.static .intro-title,#intro.static .intro-tagline span,
+#intro.static .intro-sub,#intro.static .intro-sub2,#intro.static #firstWord{animation:none;opacity:1;transform:none}
+#intro.static .intro-contour path{animation:none;stroke-dashoffset:0}
+#intro.static .intro-start.show{transition:none;transform:none}
+#intro.static.done{transition:opacity .2s;transform:none;opacity:0}
 #introSkip{position:absolute;top:max(1rem,env(safe-area-inset-top));right:1.2rem;z-index:520;
   padding:.5rem 1.05rem;border-radius:999px;border:1.5px solid rgba(255,255,255,.35);
   color:#fff;font-weight:700;font-size:.85rem;background:rgba(255,255,255,.08);backdrop-filter:blur(6px)}
@@ -1210,11 +1217,11 @@ if(window.matchMedia&&window.matchMedia("(pointer:fine)").matches){
   });
   // never trap the user: reveal Start after 8.5s even without interaction
   setTimeout(()=>startBtn.classList.add("show"),8500);
-  // reduced motion (system or app setting) → skip cinema entirely
+  // reduced motion (system) → show STATIC intro: all content visible instantly, zero animation
   const rmq=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");
-  if(rmq&&rmq.matches){intro.remove();document.body.classList.add("entered");}
+  if(rmq&&rmq.matches){intro.classList.add("static");startBtn.classList.add("show");}
   // focus Skip first for keyboard users
-  else setTimeout(()=>document.getElementById("introSkip").focus({preventScroll:true}),400);
+  setTimeout(()=>document.getElementById("introSkip").focus({preventScroll:true}),rmq&&rmq.matches?50:400);
 })();
 </script>
 </body>
