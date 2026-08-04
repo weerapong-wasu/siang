@@ -367,6 +367,22 @@ footer .heart{color:var(--high-c)}
 .intro-start.show{opacity:1;pointer-events:auto;transform:translateY(0)}
 .intro-start:hover{background:rgba(255,255,255,.18)}
 .intro-start:focus-visible{box-shadow:0 0 0 3px #0b1026,0 0 0 6px #fff}
+/* pointer FX (mouse only — auto-off on touch & reduced motion) */
+.fl-layer{position:absolute;inset:-6%;will-change:transform;
+  transform:translate3d(calc(var(--nx,0)*var(--depth,0)*1px),calc(var(--ny,0)*var(--depth,0)*1px),0)}
+#intro .fx-spot{position:absolute;inset:0;pointer-events:none;z-index:506;opacity:0;transition:opacity .5s;
+  background:radial-gradient(360px 360px at var(--sx,50%) var(--sy,42%),rgba(224,179,76,.17),transparent 70%)}
+#intro.fx-on .fx-spot{opacity:1}
+#intro.fx-on .intro-stage{will-change:transform;
+  transform:perspective(950px) rotateY(calc(var(--nx,0)*6deg)) rotateX(calc(var(--ny,0)*-5deg))}
+.fw-wrap{display:inline-block;will-change:transform;transition:transform .18s cubic-bezier(.2,.8,.3,1)}
+.tone-card,.phrase-row{position:relative;overflow:hidden}
+.card::after,.tone-card::after,.phrase-row::after,.num-card::after{content:"";position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .25s;pointer-events:none;
+  background:radial-gradient(230px 230px at var(--gx,50%) var(--gy,50%),color-mix(in srgb,var(--accent) 16%,transparent),transparent 72%)}
+.num-card{position:relative;overflow:hidden}
+.card:hover::after,.tone-card:hover::after,.phrase-row:hover::after,.num-card:hover::after{opacity:1}
+[data-motion="reduced"] .fl-layer,[data-motion="reduced"] #intro.fx-on .intro-stage{transform:none}
+
 /* app entrance stagger */
 body.entered .card,body.entered .vcard,body.entered .tone-card,body.entered .pair-lab,body.entered .phrase-row,body.entered .num-card{
   animation:fadeUp .5s cubic-bezier(.2,.8,.3,1) both;animation-delay:calc(var(--i,0)*28ms)}
@@ -389,7 +405,7 @@ body.entered .section-intro{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
     <div class="intro-title">SIANG <span class="dotsep">·</span> <span class="thai">เสียง</span></div>
     <p class="intro-tagline" aria-label="Everyone Can Read Thai"><span>Everyone</span> <span>Can</span> <span>Read</span> <span>Thai.</span></p>
     <svg class="intro-contour" viewBox="0 0 200 40" aria-hidden="true" focusable="false"><path d="M8,30 C60,38 120,26 192,8"/></svg>
-    <div>
+    <div class="fw-wrap" id="fwWrap">
       <button id="firstWord"><span aria-hidden="true">🔊</span><span>Tap to hear your first Thai word</span></button>
     </div>
     <div class="fw-reveal" id="fwReveal" hidden>
@@ -1061,16 +1077,33 @@ document.querySelectorAll(".chip[data-qm]").forEach(ch=>{
 });
 newQuestion();
 
+/* ================= CARD GLOW (cursor-follow highlight) ================= */
+if(window.matchMedia&&window.matchMedia("(pointer:fine)").matches){
+  document.addEventListener("mousemove",e=>{
+    const el=e.target.closest&&e.target.closest(".card,.tone-card,.phrase-row,.num-card");
+    if(!el)return;
+    const r=el.getBoundingClientRect();
+    el.style.setProperty("--gx",((e.clientX-r.left)/r.width*100).toFixed(1)+"%");
+    el.style.setProperty("--gy",((e.clientY-r.top)/r.height*100).toFixed(1)+"%");
+  },{passive:true});
+}
+
 /* ================= CINEMATIC INTRO ================= */
 (function(){
   const intro=document.getElementById("intro");
   if(!intro)return;
   let currentFilter="all";
   document.querySelectorAll('.chip[data-f]').forEach(ch=>ch.addEventListener("click",()=>{currentFilter=ch.dataset.f;}));
-  // floating Thai glyph backdrop
+  // floating Thai glyph backdrop — 3 parallax depth layers
   const GL=["ก","ส","ม","อ","ไ","เ","ช","ร","ย","ง","จ","ต","น","ว","แ","ป"];
   const fl=document.getElementById("flGlyphs");
-  for(let i=0;i<16;i++){
+  const DEPTHS=[10,24,42];
+  const layers=DEPTHS.map(d=>{
+    const L=document.createElement("div");
+    L.className="fl-layer";L.style.setProperty("--depth",d);
+    fl.appendChild(L);return L;
+  });
+  for(let i=0;i<18;i++){
     const s=document.createElement("span");
     s.textContent=GL[i%GL.length];
     s.style.setProperty("--x",(Math.random()*94+2)+"%");
@@ -1079,7 +1112,40 @@ newQuestion();
     s.style.setProperty("--dl",(Math.random()*8)+"s");
     s.style.setProperty("--o",(Math.random()*.35+.25).toFixed(2));
     s.style.setProperty("--r",(Math.random()*24-12)+"deg");
-    fl.appendChild(s);
+    layers[i%3].appendChild(s);
+  }
+  // dynamic pointer FX — fine pointers only, never on touch / reduced motion
+  const finePointer=window.matchMedia&&window.matchMedia("(pointer:fine)").matches;
+  const rmPre=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(finePointer&&!rmPre){
+    intro.classList.add("fx-on");
+    const spot=document.createElement("div");
+    spot.className="fx-spot";spot.setAttribute("aria-hidden","true");
+    intro.appendChild(spot);
+    const wrap=document.getElementById("fwWrap");
+    let raf=null;
+    intro.addEventListener("mousemove",e=>{
+      if(raf)return;
+      raf=requestAnimationFrame(()=>{
+        raf=null;
+        const nx=(e.clientX/innerWidth)*2-1, ny=(e.clientY/innerHeight)*2-1;
+        intro.style.setProperty("--nx",nx.toFixed(3));
+        intro.style.setProperty("--ny",ny.toFixed(3));
+        intro.style.setProperty("--sx",((e.clientX/innerWidth)*100).toFixed(1)+"%");
+        intro.style.setProperty("--sy",((e.clientY/innerHeight)*100).toFixed(1)+"%");
+        // magnetic CTA
+        const r=wrap.getBoundingClientRect();
+        const cx=r.left+r.width/2, cy=r.top+r.height/2;
+        const dx=e.clientX-cx, dy=e.clientY-cy, dist=Math.hypot(dx,dy);
+        if(dist<170){const f=(1-dist/170)*0.35;
+          wrap.style.transform=`translate(${(dx*f).toFixed(1)}px,${(dy*f).toFixed(1)}px)`;
+        }else wrap.style.transform="";
+      });
+    });
+    intro.addEventListener("mouseleave",()=>{
+      intro.style.setProperty("--nx",0);intro.style.setProperty("--ny",0);
+      wrap.style.transform="";
+    });
   }
   const startBtn=document.getElementById("introStart");
   function closeIntro(){
