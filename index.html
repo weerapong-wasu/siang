@@ -641,11 +641,11 @@ const VOWEL_SPECIAL=[
 ];
 
 const TONES=[
- {k:"mid",en:"Mid",th:"สามัญ (saman)",w:"ปา",wm:"to throw",path:"M6,30 L94,30",cvar:"--tone-mid",desc:"Flat, steady voice"},
- {k:"low",en:"Low",th:"เอก (ek)",w:"ป่า",wm:"forest",path:"M6,34 C36,42 66,50 94,53",cvar:"--tone-low",desc:"Starts low, stays low"},
- {k:"falling",en:"Falling",th:"โท (tho)",w:"ป้า",wm:"aunt",path:"M6,26 C30,10 52,16 94,54",cvar:"--tone-fall",desc:"Rises briefly, then drops — like “Oh!”"},
- {k:"high",en:"High",th:"ตรี (tri)",w:"ป๊า",wm:"dad (colloquial)",path:"M6,34 C38,30 68,18 94,8",cvar:"--tone-high",desc:"High and climbing"},
- {k:"rising",en:"Rising",th:"จัตวา (chattawa)",w:"ป๋า",wm:"papa",path:"M6,38 C34,56 60,44 94,10",cvar:"--tone-rise",desc:"Dips, then rises — like a question “huh?”"}
+ {k:"mid",en:"Mid",th:"สามัญ (saman)",w:"มา",wm:"to come",path:"M6,30 L94,30",cvar:"--tone-mid",desc:"Flat, steady voice",pitch:1},
+ {k:"low",en:"Low",th:"เอก (ek)",w:"ป่า",wm:"forest",path:"M6,34 C36,42 66,50 94,53",cvar:"--tone-low",desc:"Starts low, stays low",pitch:0.8},
+ {k:"falling",en:"Falling",th:"โท (tho)",w:"ไม่",wm:"no / not",path:"M6,26 C30,10 52,16 94,54",cvar:"--tone-fall",desc:"Rises briefly, then drops — like “Oh!”",pitch:1.05},
+ {k:"high",en:"High",th:"ตรี (tri)",w:"ม้า",wm:"horse",path:"M6,34 C38,30 68,18 94,8",cvar:"--tone-high",desc:"High and climbing",pitch:1.3},
+ {k:"rising",en:"Rising",th:"จัตวา (chattawa)",w:"หมา",wm:"dog",path:"M6,38 C34,56 60,44 94,10",cvar:"--tone-rise",desc:"Dips, then rises — like a question “huh?”",pitch:1.15}
 ];
 
 const PAIR_LABS=[
@@ -715,14 +715,14 @@ function loadVoices(){
   pick();speechSynthesis.onvoiceschanged=pick;
 }
 loadVoices();
-function speak(text,{rate}={}){
+function speak(text,{rate,pitch}={}){
   if(!("speechSynthesis" in window)){toast("Audio isn’t supported in this browser — visual guides still work!");return;}
   speechSynthesis.cancel();
   const u=new SpeechSynthesisUtterance(text);
   u.lang="th-TH";
   if(state.thVoice)u.voice=state.thVoice;
   u.rate=rate!=null?rate:(state.slow?0.6:0.85);
-  u.pitch=1;
+  u.pitch=pitch!=null?pitch:1;
   if(!state.thVoice&&!state.ttsWarned){
     state.ttsWarned=true;
     toast("No Thai voice found on this device — audio may sound off. Try Chrome or Safari.");
@@ -900,7 +900,7 @@ TONES.forEach(t=>{
     </svg>
     <div class="tone-word thai" style="color:var(${t.cvar})">${t.w}</div>
     <div class="tone-word-info">${t.wm} · ${t.desc}</div>`;
-  d.addEventListener("click",()=>speak(t.w,{rate:state.slow?0.5:0.7}));
+  d.addEventListener("click",()=>speak(t.w,{rate:state.slow?0.45:0.62,pitch:t.pitch}));
   tGrid.appendChild(d);
 });
 const pLabs=document.getElementById("pairLabs");
