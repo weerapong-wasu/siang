@@ -267,6 +267,12 @@ footer .heart{color:var(--high-c)}
 
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
+/* ============ TRUST STRIP ============ */
+.trust-strip{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.6rem;max-width:780px;margin:1.15rem auto 0;padding:0;text-align:center}
+.trust-item{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:.65rem .55rem;font-size:.78rem;color:var(--text-2);box-shadow:var(--shadow);line-height:1.4}
+.trust-item b{display:block;color:var(--text);font-size:.85rem;margin-bottom:.1rem}
+@media(max-width:560px){.trust-strip{grid-template-columns:1fr 1fr}}
+
 /* ============ SURVIVAL ============ */
 .phrase-list{display:flex;flex-direction:column;gap:.55rem;max-width:660px;margin:0 auto}
 .phrase-row{display:flex;align-items:center;gap:.95rem;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;box-shadow:var(--shadow);text-align:left;transition:transform .16s,border-color .16s,box-shadow .16s;width:100%}
@@ -346,7 +352,8 @@ footer .heart{color:var(--high-c)}
 .intro-tagline span:nth-child(3){animation-delay:2.6s}
 .intro-tagline span:nth-child(4){animation-delay:2.95s;color:#e0b34c}
 @keyframes fadeUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
-.intro-contour{width:min(260px,60vw);height:40px;margin:.4rem auto 1.6rem;display:block}
+.intro-contour{width:min(260px,60vw);height:40px;margin:.4rem auto .5rem;display:block}
+.intro-sub{color:#c9d2ff;font-size:.98rem;font-weight:600;margin-bottom:1.4rem;opacity:0;animation:fadeUp .6s cubic-bezier(.2,.8,.3,1) 3.7s both}
 .intro-contour path{fill:none;stroke:#e0b34c;stroke-width:4;stroke-linecap:round;
   stroke-dasharray:260;stroke-dashoffset:260;animation:draw 1.2s ease-out 3.3s forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
@@ -407,14 +414,15 @@ body.entered .section-intro{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
     <div class="intro-title">SIANG <span class="dotsep">·</span> <span class="thai">เสียง</span></div>
     <p class="intro-tagline" aria-label="Everyone Can Read Thai"><span>Everyone</span> <span>Can</span> <span>Read</span> <span>Thai.</span></p>
     <svg class="intro-contour" viewBox="0 0 200 40" aria-hidden="true" focusable="false"><path d="M8,30 C60,38 120,26 192,8"/></svg>
+    <p class="intro-sub">Hear it · Read it · Speak it — with confidence</p>
     <div class="fw-wrap" id="fwWrap">
-      <button id="firstWord"><span aria-hidden="true">🔊</span><span>Tap to hear your first Thai word</span></button>
+      <button id="firstWord"><span aria-hidden="true">🔊</span><span>Start with your first Thai sound</span></button>
     </div>
     <div class="fw-reveal" id="fwReveal" hidden>
       <span class="thai fw-th">สวัสดี</span>
       <span class="fw-ro">sà-wàt-dii — “hello”. You just understood Thai. 🎉</span>
     </div>
-    <button id="introStart" class="intro-start">Start learning →</button>
+    <button id="introStart" class="intro-start">Explore the learning path →</button>
   </div>
 </div>
 
@@ -425,7 +433,7 @@ body.entered .section-intro{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
     <div class="brand-mark thai" aria-hidden="true">ส</div>
     <h1>SIANG <span style="font-weight:400;color:var(--text-3)">·</span> <span class="thai" style="font-weight:600">เสียง</span></h1>
   </div>
-  <p class="tagline"><strong>Everyone Can Read Thai.</strong> All 44 consonants, 32 vowels, 5 tones — plus the survival phrases and numbers you’ll actually use tomorrow. Audio, visual guides, zero jargon. Free for everyone, designed for everyone.</p>
+  <p class="tagline"><strong>Everyone Can Read Thai.</strong> Hear it, read it, speak it with confidence — all 44 consonants, 32 vowels, 5 tones, plus the survival phrases and numbers you’ll actually use tomorrow. Free for everyone, designed for everyone.</p>
 
   <div class="toolbar" role="group" aria-label="Display settings">
     <button class="tool-btn" id="btnTheme" aria-pressed="false" title="Toggle dark mode">🌙 <span>Dark</span></button>
@@ -470,6 +478,13 @@ body.entered .section-intro{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
       <div style="font-size:.82rem;color:var(--text-2)">⌨️ Fully supported</div>
     </div>
   </div>
+
+  <ul class="trust-strip" aria-label="What to expect from SIANG">
+    <li class="trust-item"><b>👋 Zero background needed</b>Made for complete beginners</li>
+    <li class="trust-item"><b>⏱ 10 minutes a day</b>Small steps, real progress</li>
+    <li class="trust-item"><b>🎧 Listen-first method</b>Hear every sound, then read it</li>
+    <li class="trust-item"><b>🎯 First win today</b>Read your first Thai word in minutes</li>
+  </ul>
 </header>
 
 <nav class="tabs" aria-label="Sections">
