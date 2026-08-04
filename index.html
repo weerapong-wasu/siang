@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  SIANG · เสียง — Everyone Can Read Thai
+  © 2026 Forma Corporation Co., Ltd. All rights reserved.
+
+  Day 1 of the "1 Day 1 App" project.
+  Concept, design, code, and original content are the
+  intellectual property of Forma Corporation.
+  Unauthorized copying, redistribution, or commercial use
+  is prohibited without written permission.
+  Contact: Forma Corporation, Thailand
+  ============================================================
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>SIANG · Everyone Can Read Thai — Thai Phonics for Everyone</title>
+<meta name="description" content="Learn Thai phonics: 44 consonants, 32 vowels, 5 tones, survival phrases and numbers — with audio, visual pitch guides, and practice. Accessible to everyone.">
+<meta name="author" content="Forma Corporation">
+<meta name="copyright" content="© 2026 Forma Corporation Co., Ltd. All rights reserved.">
+<meta property="og:title" content="SIANG · เสียง — Everyone Can Read Thai">
+<meta property="og:description" content="Thai phonics for everyone: 44 consonants, 32 vowels, 5 tones, survival phrases — free, accessible, by Forma Corporation.">
+<meta property="og:site_name" content="SIANG by Forma Corporation">
+<meta property="og:type" content="website">
+<style>
+/* ============ DESIGN TOKENS ============ */
+:root{
+  --font-scale:1;
+  --bg:#f7f6f3;
+  --surface:#ffffff;
+  --surface-2:#f0eeea;
+  --text:#1c1c1e;
+  --text-2:#6b6b70;
+  --text-3:#6e6e76;
+  --accent:#0a66c2;
+  --accent-soft:#e3effb;
+  --gold:#b8860b;
+  --border:#e4e2dd;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.07);
+  --shadow-lg:0 4px 12px rgba(0,0,0,.08),0 16px 48px rgba(0,0,0,.12);
+  --radius:20px;
+  --radius-sm:12px;
+  /* consonant class colors — colorblind-safe, also patterned */
+  --mid-c:#0a66c2;   --mid-bg:#e3effb;
+  --high-c:#b3261e;  --high-bg:#fbe7e5;
+  --low-c:#146c43;   --low-bg:#e2f3e9;
+  --tone-mid:#5b5b60; --tone-low:#0a66c2; --tone-fall:#b3261e; --tone-high:#b8860b; --tone-rise:#146c43;
+  --focus-ring:0 0 0 3px var(--bg),0 0 0 6px var(--accent);
+}
+[data-theme="dark"]{
+  --bg:#101014;
+  --surface:#1b1b21;
+  --surface-2:#26262e;
+  --text:#f2f2f4;
+  --text-2:#b7b7bf;
+  --text-3:#84848c;
+  --accent:#6cb1f5;
+  --accent-soft:#1d3450;
+  --gold:#e0b34c;
+  --border:#33333c;
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.45);
+  --shadow-lg:0 4px 12px rgba(0,0,0,.5),0 16px 48px rgba(0,0,0,.6);
+  --mid-c:#7db8f0;  --mid-bg:#1c3350;
+  --high-c:#f2938c; --high-bg:#4a201d;
+  --low-c:#7fd3a4;  --low-bg:#173a28;
+  --tone-mid:#b7b7bf; --tone-low:#7db8f0; --tone-fall:#f2938c; --tone-high:#e0b34c; --tone-rise:#7fd3a4;
+}
+[data-contrast="high"]{
+  --bg:#ffffff; --surface:#ffffff; --surface-2:#f2f2f2;
+  --text:#000000; --text-2:#1a1a1a; --text-3:#333333;
+  --accent:#0000cc; --accent-soft:#d8d8ff; --border:#000000;
+  --mid-c:#0000cc; --mid-bg:#d8d8ff;
+  --high-c:#a80000; --high-bg:#ffd6d6;
+  --low-c:#004d00; --low-bg:#ccf0cc;
+  --tone-mid:#000; --tone-low:#0000cc; --tone-fall:#a80000; --tone-high:#7a5800; --tone-rise:#004d00;
+  --shadow:none; --shadow-lg:none;
+}
+[data-theme="dark"][data-contrast="high"]{
+  --bg:#000; --surface:#000; --surface-2:#111;
+  --text:#fff; --text-2:#eee; --text-3:#ccc;
+  --accent:#8ab4ff; --accent-soft:#00217a; --border:#fff;
+  --mid-c:#a8c8ff; --mid-bg:#002b80;
+  --high-c:#ffb3ad; --high-bg:#6e0000;
+  --low-c:#a6f2c5; --low-bg:#003d1a;
+  --tone-mid:#fff; --tone-low:#a8c8ff; --tone-fall:#ffb3ad; --tone-high:#ffd86e; --tone-rise:#a6f2c5;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:calc(16px * var(--font-scale));scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Noto Sans Thai","Helvetica Neue",Arial,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+[data-dyslexic="on"] body,[data-dyslexic="on"] button,[data-dyslexic="on"] input{
+  font-family:Verdana,"Comic Sans MS",Arial,sans-serif !important;
+  letter-spacing:.03em;word-spacing:.12em;
+}
+.thai{font-family:"Noto Sans Thai","Noto Sans Thai UI","Leelawadee UI",Thonburi,-apple-system,sans-serif}
+
+/* motion */
+[data-motion="reduced"] *,[data-motion="reduced"] *::before,[data-motion="reduced"] *::after{
+  animation-duration:.001s !important;transition-duration:.001s !important;
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001s !important;transition-duration:.001s !important}
+}
+
+/* skip link */
+.skip-link{position:absolute;left:-9999px;top:0;background:var(--accent);color:#fff;padding:.75rem 1.25rem;border-radius:0 0 12px 0;z-index:100;font-weight:600;text-decoration:none}
+.skip-link:focus{left:0}
+
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:none}
+button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:none;box-shadow:var(--focus-ring);border-radius:var(--radius-sm)}
+
+/* ============ LAYOUT ============ */
+.app{max-width:1080px;margin:0 auto;padding:0 clamp(.9rem,3vw,2rem) 6rem}
+
+header.hero{padding:2.2rem 0 1.2rem;text-align:center}
+.brand{display:inline-flex;align-items:center;gap:.6rem;margin-bottom:.35rem}
+.brand-mark{width:2.6rem;height:2.6rem;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--gold));display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.35rem;box-shadow:var(--shadow)}
+h1{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:800;letter-spacing:-.02em}
+.tagline{color:var(--text-2);font-size:1.02rem;max-width:34rem;margin:.4rem auto 0}
+.tagline strong{color:var(--accent)}
+
+/* toolbar */
+.toolbar{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin:1.1rem 0 .4rem}
+.tool-btn{display:inline-flex;align-items:center;gap:.45rem;padding:.5rem .9rem;border-radius:999px;background:var(--surface);border:1.5px solid var(--border);font-size:.86rem;font-weight:600;color:var(--text-2);transition:all .18s}
+.tool-btn:hover{border-color:var(--accent);color:var(--accent)}
+.tool-btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+[data-contrast="high"] .tool-btn[aria-pressed="true"]{background:var(--accent);color:#fff}
+
+/* a11y panel */
+.a11y-panel{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:1.2rem 1.4rem;margin:.8rem auto 0;max-width:640px;text-align:left}
+.a11y-panel[hidden]{display:none}
+.a11y-panel h2{font-size:1rem;margin-bottom:.7rem;display:flex;align-items:center;gap:.5rem}
+.a11y-row{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.55rem 0;border-top:1px solid var(--border);flex-wrap:wrap}
+.a11y-row:first-of-type{border-top:none}
+.a11y-label{font-size:.92rem;font-weight:600}
+.a11y-label small{display:block;font-weight:400;color:var(--text-2);font-size:.8rem}
+.seg{display:inline-flex;background:var(--surface-2);border-radius:999px;padding:3px;gap:2px}
+.seg button{padding:.35rem .8rem;border-radius:999px;font-size:.84rem;font-weight:600;color:var(--text-2)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff;box-shadow:var(--shadow)}
+
+/* tabs */
+nav.tabs{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:.7rem 0;margin:0 calc(clamp(.9rem,3vw,2rem) * -1);display:flex;justify-content:center}
+.tablist{display:inline-flex;background:var(--surface);border:1.5px solid var(--border);border-radius:999px;padding:4px;gap:2px;box-shadow:var(--shadow);max-width:100%;overflow-x:auto}
+.tab{padding:.55rem 1.15rem;border-radius:999px;font-weight:700;font-size:.92rem;color:var(--text-2);white-space:nowrap;transition:all .18s}
+.tab[aria-selected="true"]{background:var(--accent);color:#fff}
+.tab .emoji{margin-right:.3rem}
+
+main{padding-top:1.4rem}
+section[role="tabpanel"][hidden]{display:none}
+.section-intro{text-align:center;max-width:44rem;margin:0 auto 1.6rem}
+.section-intro h2{font-size:clamp(1.25rem,3vw,1.6rem);font-weight:800;letter-spacing:-.01em}
+.section-intro p{color:var(--text-2);margin-top:.4rem;font-size:.98rem}
+
+/* class legend / filters */
+.filters{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.chip{display:inline-flex;align-items:center;gap:.45rem;padding:.45rem .95rem;border-radius:999px;border:1.5px solid var(--border);background:var(--surface);font-size:.86rem;font-weight:700;color:var(--text-2);transition:all .15s}
+.chip .dot{width:.65rem;height:.65rem;border-radius:50%}
+.chip[aria-pressed="true"]{border-color:currentColor}
+.chip[data-f="mid"][aria-pressed="true"]{color:var(--mid-c);background:var(--mid-bg)}
+.chip[data-f="high"][aria-pressed="true"]{color:var(--high-c);background:var(--high-bg)}
+.chip[data-f="low"][aria-pressed="true"]{color:var(--low-c);background:var(--low-bg)}
+.chip[data-f="all"][aria-pressed="true"]{color:var(--accent);background:var(--accent-soft)}
+
+/* grids */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.8rem}
+@media(max-width:480px){.grid{grid-template-columns:repeat(auto-fill,minmax(126px,1fr))}}
+
+.card{position:relative;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1rem .8rem .9rem;text-align:center;box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s,border-color .18s;display:flex;flex-direction:column;align-items:center;gap:.15rem;width:100%}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--accent)}
+.card:active{transform:translateY(-1px) scale(.985)}
+.card .glyph{font-size:2.6rem;line-height:1.15;font-weight:600}
+.card .romin{font-weight:800;font-size:.95rem}
+.card .name{color:var(--text-2);font-size:.8rem}
+.card .meaning{color:var(--text-3);font-size:.74rem;font-style:italic}
+.class-tag{position:absolute;top:.55rem;left:.55rem;font-size:.62rem;font-weight:800;letter-spacing:.04em;padding:.14rem .5rem;border-radius:999px;text-transform:uppercase}
+.class-tag.mid{background:var(--mid-bg);color:var(--mid-c)}
+.class-tag.high{background:var(--high-bg);color:var(--high-c)}
+.class-tag.low{background:var(--low-bg);color:var(--low-c)}
+.speak-ico{position:absolute;top:.5rem;right:.55rem;color:var(--text-3);font-size:.8rem}
+.card.obsolete .glyph{opacity:.45}
+.obsolete-tag{font-size:.62rem;color:var(--text-3);border:1px dashed var(--text-3);border-radius:999px;padding:.05rem .45rem;margin-top:.15rem}
+
+/* vowel cards */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.8rem}
+.vcard{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow)}
+.vcard h3{font-size:.8rem;color:var(--text-2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;text-align:center}
+.vpair{display:flex;gap:.5rem}
+.vhalf{flex:1;border-radius:var(--radius-sm);padding:.6rem .3rem;text-align:center;background:var(--surface-2);transition:background .15s;display:flex;flex-direction:column;gap:.05rem;align-items:center}
+.vhalf:hover{background:var(--accent-soft)}
+.vhalf .glyph{font-size:1.9rem;font-weight:600}
+.vhalf .lbl{font-size:.68rem;font-weight:800;letter-spacing:.05em;color:var(--text-3);text-transform:uppercase}
+.vhalf .romin{font-size:.86rem;font-weight:700}
+.vhalf .hint{font-size:.7rem;color:var(--text-2)}
+
+/* tones */
+.tone-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.8rem;margin-bottom:2rem}
+.tone-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.1rem 1rem;box-shadow:var(--shadow);text-align:center;transition:transform .18s,box-shadow .18s}
+.tone-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.tone-card h3{font-size:1rem;font-weight:800}
+.tone-card .thname{color:var(--text-2);font-size:.85rem;margin-bottom:.4rem}
+.tone-contour{width:100%;height:64px;margin:.3rem 0 .5rem}
+.tone-contour path{fill:none;stroke-width:4;stroke-linecap:round}
+.tone-word{font-size:1.7rem;font-weight:700}
+.tone-word-info{font-size:.82rem;color:var(--text-2)}
+
+.pair-lab{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.4rem;box-shadow:var(--shadow);margin-bottom:1rem}
+.pair-lab h3{text-align:center;font-size:1.1rem;margin-bottom:.2rem}
+.pair-lab .sub{text-align:center;color:var(--text-2);font-size:.88rem;margin-bottom:1rem}
+.pair-row{display:flex;justify-content:center;gap:.7rem;flex-wrap:wrap}
+.pair-btn{display:flex;flex-direction:column;align-items:center;gap:.1rem;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:.8rem 1.1rem;min-width:7.2rem;transition:all .15s}
+.pair-btn:hover{border-color:var(--accent);background:var(--accent-soft)}
+.pair-btn .w{font-size:1.85rem;font-weight:700}
+.pair-btn .m{font-size:.8rem;color:var(--text-2)}
+.pair-btn .t{font-size:.7rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+
+/* practice */
+.quiz-shell{max-width:560px;margin:0 auto}
+.quiz-modes{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.quiz-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.8rem 1.4rem;box-shadow:var(--shadow-lg);text-align:center}
+.quiz-q{font-size:1.05rem;font-weight:700;margin-bottom:1rem}
+.big-play{width:5.4rem;height:5.4rem;border-radius:50%;background:var(--accent);color:#fff;font-size:2rem;display:inline-grid;place-items:center;box-shadow:var(--shadow-lg);transition:transform .15s;margin-bottom:1.2rem}
+.big-play:hover{transform:scale(1.06)}
+.big-play:active{transform:scale(.96)}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.quiz-opt{background:var(--surface-2);border:2px solid var(--border);border-radius:var(--radius-sm);padding:.9rem .5rem;font-size:1.6rem;font-weight:700;transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:.1rem}
+.quiz-opt small{font-size:.78rem;font-weight:600;color:var(--text-2)}
+.quiz-opt:hover{border-color:var(--accent)}
+.quiz-opt.correct{border-color:var(--low-c);background:var(--low-bg);color:var(--low-c)}
+.quiz-opt.wrong{border-color:var(--high-c);background:var(--high-bg);color:var(--high-c)}
+.quiz-feedback{min-height:1.6rem;margin-top:.9rem;font-weight:700}
+.quiz-feedback.ok{color:var(--low-c)}
+.quiz-feedback.no{color:var(--high-c)}
+.quiz-score{display:flex;justify-content:center;gap:1.6rem;margin-top:1rem;color:var(--text-2);font-size:.9rem;font-weight:600}
+.quiz-next{margin-top:1rem;padding:.65rem 1.6rem;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;box-shadow:var(--shadow)}
+
+/* detail dialog */
+dialog.detail{border:none;border-radius:calc(var(--radius) + 4px);padding:0;max-width:420px;width:calc(100vw - 2rem);background:var(--surface);color:var(--text);box-shadow:var(--shadow-lg)}
+dialog.detail::backdrop{background:rgba(0,0,0,.45);backdrop-filter:blur(3px)}
+.detail-inner{padding:1.6rem 1.5rem 1.4rem;text-align:center;position:relative}
+.detail-close{position:absolute;top:.8rem;right:.8rem;width:2.2rem;height:2.2rem;border-radius:50%;background:var(--surface-2);font-size:1rem;display:grid;place-items:center}
+.detail-glyph{font-size:5rem;font-weight:600;line-height:1.2}
+.detail-name{font-size:1.15rem;font-weight:800;margin-top:.2rem}
+.detail-meaning{color:var(--text-2);font-style:italic;font-size:.9rem}
+.detail-rows{margin-top:1rem;text-align:left;border-top:1px solid var(--border)}
+.detail-row{display:flex;justify-content:space-between;gap:1rem;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.9rem}
+.detail-row b{color:var(--text-2);font-weight:600}
+.detail-row span{font-weight:700;text-align:right}
+.detail-listen{margin-top:1.1rem;padding:.6rem 1.5rem;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;display:inline-flex;align-items:center;gap:.5rem}
+
+/* toast for no-TTS */
+.toast{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:.7rem 1.2rem;border-radius:999px;font-size:.88rem;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:opacity .25s;z-index:200;max-width:90vw;text-align:center}
+.toast.show{opacity:1}
+
+footer{margin-top:3.5rem;text-align:center;color:var(--text-3);font-size:.82rem;line-height:1.7}
+footer .heart{color:var(--high-c)}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* ============ SURVIVAL ============ */
+.phrase-list{display:flex;flex-direction:column;gap:.55rem;max-width:660px;margin:0 auto}
+.phrase-row{display:flex;align-items:center;gap:.95rem;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;box-shadow:var(--shadow);text-align:left;transition:transform .16s,border-color .16s,box-shadow .16s;width:100%}
+.phrase-row:hover{transform:translateX(4px);border-color:var(--accent);box-shadow:var(--shadow-lg)}
+.phrase-row:active{transform:translateX(2px) scale(.995)}
+.phrase-main{display:flex;flex-direction:column;gap:.05rem;min-width:0}
+.phrase-row .th{font-size:1.28rem;font-weight:700;line-height:1.35}
+.phrase-row .ph{color:var(--accent);font-weight:700;font-size:.86rem}
+.phrase-row .en{color:var(--text-2);font-size:.86rem}
+.phrase-row .play{margin-left:auto;flex:none;width:2.5rem;height:2.5rem;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:1rem}
+.num-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.6rem;max-width:660px;margin:0 auto}
+.num-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:.7rem .4rem;text-align:center;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:.05rem;transition:transform .16s,border-color .16s}
+.num-card:hover{transform:translateY(-3px);border-color:var(--gold)}
+.num-card .digit{font-size:1.6rem;font-weight:800;color:var(--gold)}
+.num-card .th{font-size:1.05rem;font-weight:700}
+.num-card .ph{font-size:.74rem;color:var(--text-2);font-weight:600}
+.subhead{text-align:center;font-size:1.05rem;font-weight:800;margin:2rem 0 .9rem}
+/* charm: class-colored glyphs */
+.card[data-cl="mid"] .glyph{color:var(--mid-c)}
+.card[data-cl="high"] .glyph{color:var(--high-c)}
+.card[data-cl="low"] .glyph{color:var(--low-c)}
+.vhalf .glyph{color:var(--accent)}
+/* responsive polish */
+@media(max-width:560px){
+  .tab{padding:.5rem .72rem;font-size:.84rem}
+  .tab .emoji{margin-right:.15rem}
+  .hero{padding-top:1.4rem}
+  .tagline{font-size:.92rem}
+  .phrase-row .th{font-size:1.12rem}
+  .phrase-row{padding:.65rem .8rem;gap:.7rem}
+  .phrase-row .play{width:2.2rem;height:2.2rem}
+  .quiz-opts{gap:.55rem}
+  .app{padding-bottom:3.5rem}
+}
+@media(max-width:380px){
+  .tab .emoji{display:none}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
+}
+
+/* ============ CINEMATIC INTRO ============ */
+#intro{position:fixed;inset:0;z-index:500;overflow:hidden;display:grid;place-items:center;
+  background:radial-gradient(1200px 800px at 75% 15%,rgba(224,179,76,.16),transparent 55%),
+             radial-gradient(900px 700px at 20% 85%,rgba(108,177,245,.14),transparent 55%),
+             linear-gradient(160deg,#0b1026 0%,#141b3d 55%,#1b2350 100%);
+  color:#fff;transition:transform .85s cubic-bezier(.7,0,.2,1),opacity .85s;
+}
+#intro.done{transform:translateY(-100%);opacity:.4;pointer-events:none}
+#introSkip{position:absolute;top:max(1rem,env(safe-area-inset-top));right:1.2rem;z-index:520;
+  padding:.5rem 1.05rem;border-radius:999px;border:1.5px solid rgba(255,255,255,.35);
+  color:#fff;font-weight:700;font-size:.85rem;background:rgba(255,255,255,.08);backdrop-filter:blur(6px)}
+#introSkip:hover{background:rgba(255,255,255,.18)}
+#introSkip:focus-visible{box-shadow:0 0 0 3px #0b1026,0 0 0 6px #e0b34c}
+.fl{position:absolute;inset:0;pointer-events:none}
+.fl span{position:absolute;bottom:-12vh;left:var(--x);font-size:var(--s);opacity:0;
+  color:rgba(255,255,255,.13);font-weight:600;
+  animation:floatUp var(--d) linear var(--dl) infinite}
+@keyframes floatUp{
+  0%{transform:translateY(0) rotate(0deg);opacity:0}
+  12%{opacity:var(--o,.6)}
+  85%{opacity:var(--o,.6)}
+  100%{transform:translateY(-118vh) rotate(var(--r,8deg));opacity:0}
+}
+.intro-stage{position:relative;z-index:510;text-align:center;padding:1.5rem;max-width:44rem}
+.intro-mark{width:4.6rem;height:4.6rem;margin:0 auto 1rem;border-radius:22px;display:grid;place-items:center;
+  font-size:2.4rem;font-weight:800;color:#0b1026;
+  background:linear-gradient(135deg,#e0b34c,#f5e6bf 60%,#e0b34c);
+  box-shadow:0 8px 40px rgba(224,179,76,.45);
+  animation:markIn .9s cubic-bezier(.2,1.4,.3,1) .35s both}
+@keyframes markIn{from{transform:scale(.2) rotate(-12deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.intro-title{font-size:clamp(2.2rem,7vw,3.6rem);font-weight:800;letter-spacing:-.02em;
+  animation:fadeUp .8s cubic-bezier(.2,.8,.3,1) 1s both}
+.intro-title .dotsep{color:#e0b34c;font-weight:400}
+.intro-tagline{margin-top:.6rem;font-size:clamp(1.05rem,3.4vw,1.5rem);font-weight:600;color:#dfe4ff}
+.intro-tagline span{display:inline-block;opacity:0;animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
+.intro-tagline span:nth-child(1){animation-delay:1.9s}
+.intro-tagline span:nth-child(2){animation-delay:2.25s}
+.intro-tagline span:nth-child(3){animation-delay:2.6s}
+.intro-tagline span:nth-child(4){animation-delay:2.95s;color:#e0b34c}
+@keyframes fadeUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+.intro-contour{width:min(260px,60vw);height:40px;margin:.4rem auto 1.6rem;display:block}
+.intro-contour path{fill:none;stroke:#e0b34c;stroke-width:4;stroke-linecap:round;
+  stroke-dasharray:260;stroke-dashoffset:260;animation:draw 1.2s ease-out 3.3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+#firstWord{position:relative;display:inline-flex;align-items:center;gap:.7rem;
+  padding:1rem 1.7rem;border-radius:999px;font-size:1.05rem;font-weight:800;color:#0b1026;
+  background:linear-gradient(135deg,#f5e6bf,#e0b34c);box-shadow:0 10px 44px rgba(224,179,76,.4);
+  opacity:0;animation:fadeUp .7s cubic-bezier(.2,.8,.3,1) 4.2s both,pulseGlow 2.2s ease-in-out 5s infinite}
+#firstWord:focus-visible{box-shadow:0 0 0 3px #0b1026,0 0 0 6px #e0b34c}
+@keyframes pulseGlow{0%,100%{box-shadow:0 10px 44px rgba(224,179,76,.4)}50%{box-shadow:0 10px 64px rgba(224,179,76,.75)}}
+#firstWord::after{content:"";position:absolute;inset:-4px;border-radius:999px;border:2px solid rgba(224,179,76,.8);opacity:0}
+#firstWord.played::after{animation:ripple .9s ease-out}
+@keyframes ripple{from{opacity:.9;transform:scale(1)}to{opacity:0;transform:scale(1.55)}}
+.fw-reveal{margin-top:1.2rem;display:flex;flex-direction:column;gap:.1rem;animation:fadeUp .6s cubic-bezier(.2,.8,.3,1) both}
+.fw-reveal[hidden]{display:none}
+.fw-reveal .fw-th{font-size:clamp(2.2rem,8vw,3.2rem);font-weight:700;color:#fff}
+.fw-reveal .fw-ro{font-size:1rem;color:#c9d2ff;font-weight:600}
+.intro-start{margin-top:1.5rem;padding:.8rem 2rem;border-radius:999px;font-weight:800;font-size:1rem;
+  color:#fff;border:2px solid rgba(255,255,255,.45);background:rgba(255,255,255,.07);backdrop-filter:blur(6px);
+  opacity:0;pointer-events:none;transform:translateY(14px);transition:all .5s cubic-bezier(.2,.8,.3,1)}
+.intro-start.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+.intro-start:hover{background:rgba(255,255,255,.18)}
+.intro-start:focus-visible{box-shadow:0 0 0 3px #0b1026,0 0 0 6px #fff}
+/* app entrance stagger */
+body.entered .card,body.entered .vcard,body.entered .tone-card,body.entered .pair-lab,body.entered .phrase-row,body.entered .num-card{
+  animation:fadeUp .5s cubic-bezier(.2,.8,.3,1) both;animation-delay:calc(var(--i,0)*28ms)}
+body.entered .section-intro{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
+
+@media print{
+  nav.tabs,.toolbar,.a11y-panel,.big-play,.quiz-next{display:none}
+  body{background:#fff;color:#000}
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div id="intro" role="dialog" aria-modal="true" aria-label="Welcome to SIANG. Everyone Can Read Thai. Press Skip intro to go straight to the app.">
+  <button id="introSkip">Skip intro →</button>
+  <div class="fl" id="flGlyphs" aria-hidden="true"></div>
+  <div class="intro-stage">
+    <div class="intro-mark thai" aria-hidden="true">ส</div>
+    <div class="intro-title">SIANG <span class="dotsep">·</span> <span class="thai">เสียง</span></div>
+    <p class="intro-tagline" aria-label="Everyone Can Read Thai"><span>Everyone</span> <span>Can</span> <span>Read</span> <span>Thai.</span></p>
+    <svg class="intro-contour" viewBox="0 0 200 40" aria-hidden="true" focusable="false"><path d="M8,30 C60,38 120,26 192,8"/></svg>
+    <div>
+      <button id="firstWord"><span aria-hidden="true">🔊</span><span>Tap to hear your first Thai word</span></button>
+    </div>
+    <div class="fw-reveal" id="fwReveal" hidden>
+      <span class="thai fw-th">สวัสดี</span>
+      <span class="fw-ro">sà-wàt-dii — “hello”. You just understood Thai. 🎉</span>
+    </div>
+    <button id="introStart" class="intro-start">Start learning →</button>
+  </div>
+</div>
+
+<div class="app">
+
+<header class="hero">
+  <div class="brand">
+    <div class="brand-mark thai" aria-hidden="true">ส</div>
+    <h1>SIANG <span style="font-weight:400;color:var(--text-3)">·</span> <span class="thai" style="font-weight:600">เสียง</span></h1>
+  </div>
+  <p class="tagline"><strong>Everyone Can Read Thai.</strong> All 44 consonants, 32 vowels, 5 tones — plus the survival phrases and numbers you’ll actually use tomorrow. Audio, visual guides, zero jargon. Free for everyone, designed for everyone.</p>
+
+  <div class="toolbar" role="group" aria-label="Display settings">
+    <button class="tool-btn" id="btnTheme" aria-pressed="false" title="Toggle dark mode">🌙 <span>Dark</span></button>
+    <button class="tool-btn" id="btnA11y" aria-expanded="false" aria-controls="a11yPanel">♿ <span>Accessibility</span></button>
+    <button class="tool-btn" id="btnSlow" aria-pressed="false" title="Speak slower">🐢 <span>Slow audio</span></button>
+  </div>
+
+  <div class="a11y-panel" id="a11yPanel" hidden aria-label="Accessibility options">
+    <h2>♿ Accessibility <span style="font-weight:400;color:var(--text-3);font-size:.85rem">— for everyone, every ability</span></h2>
+    <div class="a11y-row">
+      <div class="a11y-label">Text size<small>Scales the entire app</small></div>
+      <div class="seg" role="group" aria-label="Text size">
+        <button data-fs="0.9" aria-pressed="false">A−</button>
+        <button data-fs="1" aria-pressed="true">A</button>
+        <button data-fs="1.15" aria-pressed="false">A+</button>
+        <button data-fs="1.35" aria-pressed="false">A++</button>
+      </div>
+    </div>
+    <div class="a11y-row">
+      <div class="a11y-label">High contrast<small>Stronger colors &amp; borders</small></div>
+      <div class="seg" role="group" aria-label="High contrast">
+        <button data-hc="off" aria-pressed="true">Off</button>
+        <button data-hc="on" aria-pressed="false">On</button>
+      </div>
+    </div>
+    <div class="a11y-row">
+      <div class="a11y-label">Reduce motion<small>Minimizes animations</small></div>
+      <div class="seg" role="group" aria-label="Reduce motion">
+        <button data-rm="off" aria-pressed="true">Off</button>
+        <button data-rm="on" aria-pressed="false">On</button>
+      </div>
+    </div>
+    <div class="a11y-row">
+      <div class="a11y-label">Easy-read font<small>Dyslexia-friendly spacing</small></div>
+      <div class="seg" role="group" aria-label="Easy read font">
+        <button data-dx="off" aria-pressed="true">Off</button>
+        <button data-dx="on" aria-pressed="false">On</button>
+      </div>
+    </div>
+    <div class="a11y-row">
+      <div class="a11y-label">Keyboard<small>Tab to move · Enter/Space to hear · Esc closes popups</small></div>
+      <div style="font-size:.82rem;color:var(--text-2)">⌨️ Fully supported</div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="tablist" role="tablist">
+    <button class="tab" role="tab" id="tab-consonants" aria-controls="panel-consonants" aria-selected="true"><span class="emoji" aria-hidden="true">🔤</span>Consonants</button>
+    <button class="tab" role="tab" id="tab-vowels" aria-controls="panel-vowels" aria-selected="false" tabindex="-1"><span class="emoji" aria-hidden="true">🎈</span>Vowels</button>
+    <button class="tab" role="tab" id="tab-tones" aria-controls="panel-tones" aria-selected="false" tabindex="-1"><span class="emoji" aria-hidden="true">🎵</span>Tones</button>
+    <button class="tab" role="tab" id="tab-survival" aria-controls="panel-survival" aria-selected="false" tabindex="-1"><span class="emoji" aria-hidden="true">🧳</span>Survival</button>
+    <button class="tab" role="tab" id="tab-practice" aria-controls="panel-practice" aria-selected="false" tabindex="-1"><span class="emoji" aria-hidden="true">🏆</span>Practice</button>
+  </div>
+</nav>
+
+<main id="main">
+
+<!-- ===== CONSONANTS ===== -->
+<section role="tabpanel" id="panel-consonants" aria-labelledby="tab-consonants">
+  <div class="section-intro">
+    <h2>The 44 Consonants</h2>
+    <p>Every Thai consonant belongs to one of three <b>classes</b> — Middle, High, or Low. The class decides how tones work later. Tap any card to hear it and see details.</p>
+  </div>
+  <div class="filters" role="group" aria-label="Filter by consonant class">
+    <button class="chip" data-f="all" aria-pressed="true"><span class="dot" style="background:var(--accent)" aria-hidden="true"></span>All 44</button>
+    <button class="chip" data-f="mid" aria-pressed="false"><span class="dot" style="background:var(--mid-c)" aria-hidden="true"></span>Middle · 9</button>
+    <button class="chip" data-f="high" aria-pressed="false"><span class="dot" style="background:var(--high-c)" aria-hidden="true"></span>High · 11</button>
+    <button class="chip" data-f="low" aria-pressed="false"><span class="dot" style="background:var(--low-c)" aria-hidden="true"></span>Low · 24</button>
+  </div>
+  <div class="grid" id="consonantGrid" role="list"></div>
+</section>
+
+<!-- ===== VOWELS ===== -->
+<section role="tabpanel" id="panel-vowels" aria-labelledby="tab-vowels" hidden>
+  <div class="section-intro">
+    <h2>Vowels — Short &amp; Long</h2>
+    <p>All <b>32 traditional Thai vowels</b> (สระ ๓๒): 12 short/long pairs + 8 special forms. Length changes meaning! The <span class="thai">อ</span> shows where the consonant sits. Tap to hear the difference.</p>
+  </div>
+  <div class="vgrid" id="vowelGrid" role="list"></div>
+</section>
+
+<!-- ===== TONES ===== -->
+<section role="tabpanel" id="panel-tones" aria-labelledby="tab-tones" hidden>
+  <div class="section-intro">
+    <h2>The 5 Tones</h2>
+    <p>The same syllable with a different pitch = a completely different word. Watch the pitch line, then tap to hear each tone.</p>
+  </div>
+  <div class="tone-grid" id="toneGrid"></div>
+  <div class="section-intro"><h2 style="font-size:1.2rem">🧪 Minimal-Pair Lab</h2><p>Famous word sets that differ <i>only</i> by tone. This is where foreigners laugh — and learn.</p></div>
+  <div id="pairLabs"></div>
+</section>
+
+<!-- ===== SURVIVAL ===== -->
+<section role="tabpanel" id="panel-survival" aria-labelledby="tab-survival" hidden>
+  <div class="section-intro">
+    <h2>Survival Thai 🧳</h2>
+    <p>The phrases foreigners actually need — tap any line to hear it. Phonetics show tones with marks: <b>à</b> low · <b>â</b> falling · <b>á</b> high · <b>ǎ</b> rising · plain = mid.</p>
+  </div>
+  <div class="filters" role="group" aria-label="Filter by category" id="survFilters"></div>
+  <div class="phrase-list" id="phraseList" role="list"></div>
+  <h3 class="subhead">🔢 Numbers — เลขไทย (your price-bargaining superpower)</h3>
+  <div class="num-grid" id="numGrid" role="list"></div>
+</section>
+
+<!-- ===== PRACTICE ===== -->
+<section role="tabpanel" id="panel-practice" aria-labelledby="tab-practice" hidden>
+  <div class="section-intro">
+    <h2>Practice Arena</h2>
+    <p>Listen and choose. No signup, no pressure — just your ears getting sharper.</p>
+  </div>
+  <div class="quiz-shell">
+    <div class="quiz-modes" role="group" aria-label="Quiz mode">
+      <button class="chip" data-qm="consonant" aria-pressed="true"><span aria-hidden="true">🔤</span> Hear a consonant</button>
+      <button class="chip" data-qm="tone" aria-pressed="false"><span aria-hidden="true">🎵</span> Hear a tone</button>
+      <button class="chip" data-qm="number" aria-pressed="false"><span aria-hidden="true">🔢</span> Hear a number</button>
+    </div>
+    <div class="quiz-card">
+      <p class="quiz-q" id="quizQ">Which consonant do you hear?</p>
+      <button class="big-play" id="quizPlay" aria-label="Play the sound again">▶</button>
+      <div class="quiz-opts" id="quizOpts"></div>
+      <p class="quiz-feedback" id="quizFeedback" role="status" aria-live="polite"></p>
+      <div class="quiz-score" aria-live="polite">
+        <span>✅ Correct: <b id="scoreOk">0</b></span>
+        <span>🔥 Streak: <b id="scoreStreak">0</b></span>
+        <span>🎯 Attempts: <b id="scoreAll">0</b></span>
+      </div>
+      <button class="quiz-next" id="quizNext" hidden>Next →</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p><b>SIANG · เสียง</b> — Everyone Can Read Thai. <span class="heart">♥</span></p>
+  <p>Built with the belief that knowledge should be accessible to everyone, everywhere — no matter who you are.</p>
+  <p>Day 1 of the “1 Day · 1 App” project · Crafted by <b>Forma Corporation</b> 🇹🇭</p>
+  <p>© 2026 Forma Corporation Co., Ltd. All rights reserved. “SIANG” name, design &amp; original content are property of Forma Corporation.</p>
+  <p>🔒 Privacy: this app collects <b>zero personal data</b> — no accounts, no cookies, no tracking, no analytics. Audio is generated by your own device’s speech engine.</p>
+</footer>
+</div>
+
+<dialog class="detail" id="detailDialog" aria-labelledby="detailName">
+  <div class="detail-inner">
+    <button class="detail-close" id="detailClose" aria-label="Close">✕</button>
+    <div class="detail-glyph thai" id="detailGlyph"></div>
+    <div class="detail-name" id="detailName"></div>
+    <div class="detail-meaning" id="detailMeaning"></div>
+    <div class="detail-rows" id="detailRows"></div>
+    <button class="detail-listen" id="detailListen">🔊 Listen</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ================= DATA ================= */
+const CONSONANTS=[
+ {c:"ก",n:"กอ ไก่",nr:"ko kai",m:"chicken",cl:"mid",s:"g",ipa:"k",hint:"g in “go” (unaspirated k)"},
+ {c:"ข",n:"ขอ ไข่",nr:"kho khai",m:"egg",cl:"high",s:"kh",ipa:"kʰ",hint:"k in “kite” (with air puff)"},
+ {c:"ฃ",n:"ฃอ ขวด",nr:"kho khuat",m:"bottle",cl:"high",s:"kh",ipa:"kʰ",hint:"k in “kite”",ob:1},
+ {c:"ค",n:"คอ ควาย",nr:"kho khwai",m:"buffalo",cl:"low",s:"kh",ipa:"kʰ",hint:"k in “kite”"},
+ {c:"ฅ",n:"ฅอ คน",nr:"kho khon",m:"person",cl:"low",s:"kh",ipa:"kʰ",hint:"k in “kite”",ob:1},
+ {c:"ฆ",n:"ฆอ ระฆัง",nr:"kho ra-khang",m:"bell",cl:"low",s:"kh",ipa:"kʰ",hint:"k in “kite”"},
+ {c:"ง",n:"งอ งู",nr:"ngo ngu",m:"snake",cl:"low",s:"ng",ipa:"ŋ",hint:"ng in “sing” — at the start!"},
+ {c:"จ",n:"จอ จาน",nr:"cho chan",m:"plate",cl:"mid",s:"j",ipa:"tɕ",hint:"j in “jar” (crisp, no air)"},
+ {c:"ฉ",n:"ฉอ ฉิ่ง",nr:"cho ching",m:"cymbals",cl:"high",s:"ch",ipa:"tɕʰ",hint:"ch in “chat”"},
+ {c:"ช",n:"ชอ ช้าง",nr:"cho chang",m:"elephant",cl:"low",s:"ch",ipa:"tɕʰ",hint:"ch in “chat”"},
+ {c:"ซ",n:"ซอ โซ่",nr:"so so",m:"chain",cl:"low",s:"s",ipa:"s",hint:"s in “sun”"},
+ {c:"ฌ",n:"ฌอ เฌอ",nr:"cho choe",m:"tree",cl:"low",s:"ch",ipa:"tɕʰ",hint:"ch in “chat” (rare letter)"},
+ {c:"ญ",n:"ญอ หญิง",nr:"yo ying",m:"woman",cl:"low",s:"y",ipa:"j",hint:"y in “yes”"},
+ {c:"ฎ",n:"ฎอ ชฎา",nr:"do cha-da",m:"headdress",cl:"mid",s:"d",ipa:"d",hint:"d in “dog”"},
+ {c:"ฏ",n:"ฏอ ปฏัก",nr:"to pa-tak",m:"goad",cl:"mid",s:"t",ipa:"t",hint:"t in “stop” (no air puff)"},
+ {c:"ฐ",n:"ฐอ ฐาน",nr:"tho than",m:"pedestal",cl:"high",s:"th",ipa:"tʰ",hint:"t in “top” (with air)"},
+ {c:"ฑ",n:"ฑอ มณโฑ",nr:"tho montho",m:"Montho (queen)",cl:"low",s:"th",ipa:"tʰ",hint:"t in “top”"},
+ {c:"ฒ",n:"ฒอ ผู้เฒ่า",nr:"tho phu-thao",m:"elder",cl:"low",s:"th",ipa:"tʰ",hint:"t in “top”"},
+ {c:"ณ",n:"ณอ เณร",nr:"no nen",m:"novice monk",cl:"low",s:"n",ipa:"n",hint:"n in “nice”"},
+ {c:"ด",n:"ดอ เด็ก",nr:"do dek",m:"child",cl:"mid",s:"d",ipa:"d",hint:"d in “dog”"},
+ {c:"ต",n:"ตอ เต่า",nr:"to tao",m:"turtle",cl:"mid",s:"t",ipa:"t",hint:"t in “stop” (no air puff)"},
+ {c:"ถ",n:"ถอ ถุง",nr:"tho thung",m:"sack",cl:"high",s:"th",ipa:"tʰ",hint:"t in “top” (with air)"},
+ {c:"ท",n:"ทอ ทหาร",nr:"tho tha-han",m:"soldier",cl:"low",s:"th",ipa:"tʰ",hint:"t in “top”"},
+ {c:"ธ",n:"ธอ ธง",nr:"tho thong",m:"flag",cl:"low",s:"th",ipa:"tʰ",hint:"t in “top”"},
+ {c:"น",n:"นอ หนู",nr:"no nu",m:"mouse",cl:"low",s:"n",ipa:"n",hint:"n in “nice”"},
+ {c:"บ",n:"บอ ใบไม้",nr:"bo bai-mai",m:"leaf",cl:"mid",s:"b",ipa:"b",hint:"b in “boy”"},
+ {c:"ป",n:"ปอ ปลา",nr:"po pla",m:"fish",cl:"mid",s:"p",ipa:"p",hint:"p in “spin” (no air puff)"},
+ {c:"ผ",n:"ผอ ผึ้ง",nr:"pho phueng",m:"bee",cl:"high",s:"ph",ipa:"pʰ",hint:"p in “pie” (with air)"},
+ {c:"ฝ",n:"ฝอ ฝา",nr:"fo fa",m:"lid",cl:"high",s:"f",ipa:"f",hint:"f in “fun”"},
+ {c:"พ",n:"พอ พาน",nr:"pho phan",m:"tray",cl:"low",s:"ph",ipa:"pʰ",hint:"p in “pie”"},
+ {c:"ฟ",n:"ฟอ ฟัน",nr:"fo fan",m:"teeth",cl:"low",s:"f",ipa:"f",hint:"f in “fun”"},
+ {c:"ภ",n:"ภอ สำเภา",nr:"pho sam-phao",m:"sailing ship",cl:"low",s:"ph",ipa:"pʰ",hint:"p in “pie”"},
+ {c:"ม",n:"มอ ม้า",nr:"mo ma",m:"horse",cl:"low",s:"m",ipa:"m",hint:"m in “man”"},
+ {c:"ย",n:"ยอ ยักษ์",nr:"yo yak",m:"giant",cl:"low",s:"y",ipa:"j",hint:"y in “yes”"},
+ {c:"ร",n:"รอ เรือ",nr:"ro ruea",m:"boat",cl:"low",s:"r",ipa:"r",hint:"rolled r (often l in casual speech)"},
+ {c:"ล",n:"ลอ ลิง",nr:"lo ling",m:"monkey",cl:"low",s:"l",ipa:"l",hint:"l in “love”"},
+ {c:"ว",n:"วอ แหวน",nr:"wo waen",m:"ring",cl:"low",s:"w",ipa:"w",hint:"w in “win”"},
+ {c:"ศ",n:"ศอ ศาลา",nr:"so sala",m:"pavilion",cl:"high",s:"s",ipa:"s",hint:"s in “sun”"},
+ {c:"ษ",n:"ษอ ฤๅษี",nr:"so ruesi",m:"hermit",cl:"high",s:"s",ipa:"s",hint:"s in “sun”"},
+ {c:"ส",n:"สอ เสือ",nr:"so suea",m:"tiger",cl:"high",s:"s",ipa:"s",hint:"s in “sun”"},
+ {c:"ห",n:"หอ หีบ",nr:"ho hip",m:"chest (box)",cl:"high",s:"h",ipa:"h",hint:"h in “hat”"},
+ {c:"ฬ",n:"ฬอ จุฬา",nr:"lo chula",m:"star-shaped kite",cl:"low",s:"l",ipa:"l",hint:"l in “love”"},
+ {c:"อ",n:"ออ อ่าง",nr:"o ang",m:"basin",cl:"mid",s:"—",ipa:"ʔ",hint:"silent placeholder / glottal stop"},
+ {c:"ฮ",n:"ฮอ นกฮูก",nr:"ho nok-huk",m:"owl",cl:"low",s:"h",ipa:"h",hint:"h in “hat”"}
+];
+const CLASSNAMES={mid:"Middle class",high:"High class",low:"Low class"};
+
+const VOWEL_PAIRS=[
+ {t:"A",short:{g:"อะ",r:"a",h:"u in “nut”",say:"อะ"},long:{g:"อา",r:"aa",h:"a in “father”",say:"อา"}},
+ {t:"I",short:{g:"อิ",r:"i",h:"i in “tip”",say:"อิ"},long:{g:"อี",r:"ii",h:"ee in “see”",say:"อี"}},
+ {t:"UE",short:{g:"อึ",r:"ue",h:"“oo” w/ spread lips",say:"อึ"},long:{g:"อือ",r:"uue",h:"same, held longer",say:"อือ"}},
+ {t:"U",short:{g:"อุ",r:"u",h:"u in “put”",say:"อุ"},long:{g:"อู",r:"uu",h:"oo in “moon”",say:"อู"}},
+ {t:"E",short:{g:"เอะ",r:"e",h:"e in “pet”",say:"เอะ"},long:{g:"เอ",r:"ee",h:"a in “late”",say:"เอ"}},
+ {t:"AE",short:{g:"แอะ",r:"ae",h:"a in “cat” (short)",say:"แอะ"},long:{g:"แอ",r:"aae",h:"a in “cat” (long)",say:"แอ"}},
+ {t:"O",short:{g:"โอะ",r:"o",h:"o in “note” (short)",say:"โอะ"},long:{g:"โอ",r:"oo",h:"o in “go”",say:"โอ"}},
+ {t:"AW",short:{g:"เอาะ",r:"o",h:"o in “hot”",say:"เอาะ"},long:{g:"ออ",r:"aw",h:"aw in “saw”",say:"ออ"}},
+ {t:"OE",short:{g:"เออะ",r:"oe",h:"u in “burn” (short)",say:"เออะ"},long:{g:"เออ",r:"oee",h:"u in “burn” (long)",say:"เออ"}},
+ {t:"IA",short:{g:"เอียะ",r:"ia",h:"ea in “dear” (short)",say:"เอียะ"},long:{g:"เอีย",r:"iia",h:"ea in “dear”",say:"เอีย"}},
+ {t:"UEA",short:{g:"เอือะ",r:"uea",h:"ue + a glide (short)",say:"เอือะ"},long:{g:"เอือ",r:"uuea",h:"ue + a glide",say:"เอือ"}},
+ {t:"UA",short:{g:"อัวะ",r:"ua",h:"ua in “guava” (short)",say:"อัวะ"},long:{g:"อัว",r:"uua",h:"ua in “guava”",say:"อัว"}}
+];
+const VOWEL_SPECIAL=[
+ {g:"อำ",r:"am",h:"um in “drum”",say:"อำ"},
+ {g:"ไอ",r:"ai",h:"i in “hi” (ไม้มลาย)",say:"ไอ"},
+ {g:"ใอ",r:"ai",h:"i in “hi” — ไม้ม้วน, used in only 20 words",say:"ใอ"},
+ {g:"เอา",r:"ao",h:"ow in “cow”",say:"เอา"},
+ {g:"ฤ",r:"rue / ri / roe",h:"varies by word: ฤดู “rue”, ฤทธิ์ “rit”, ฤกษ์ “roek”",say:"รึ"},
+ {g:"ฤๅ",r:"ruue",h:"“rue” held longer — rare, Sanskrit loans",say:"รือ"},
+ {g:"ฦ",r:"lue",h:"“lue” — historic letter",say:"ลึ",ob:1},
+ {g:"ฦๅ",r:"luue",h:"“lue” held longer — historic",say:"ลือ",ob:1}
+];
+
+const TONES=[
+ {k:"mid",en:"Mid",th:"สามัญ (saman)",w:"ปา",wm:"to throw",path:"M6,30 L94,30",cvar:"--tone-mid",desc:"Flat, steady voice"},
+ {k:"low",en:"Low",th:"เอก (ek)",w:"ป่า",wm:"forest",path:"M6,34 C36,42 66,50 94,53",cvar:"--tone-low",desc:"Starts low, stays low"},
+ {k:"falling",en:"Falling",th:"โท (tho)",w:"ป้า",wm:"aunt",path:"M6,26 C30,10 52,16 94,54",cvar:"--tone-fall",desc:"Rises briefly, then drops — like “Oh!”"},
+ {k:"high",en:"High",th:"ตรี (tri)",w:"ป๊า",wm:"dad (colloquial)",path:"M6,34 C38,30 68,18 94,8",cvar:"--tone-high",desc:"High and climbing"},
+ {k:"rising",en:"Rising",th:"จัตวา (chattawa)",w:"ป๋า",wm:"papa",path:"M6,38 C34,56 60,44 94,10",cvar:"--tone-rise",desc:"Dips, then rises — like a question “huh?”"}
+];
+
+const PAIR_LABS=[
+ {title:"เสือ · เสื่อ · เสื้อ",sub:"Tiger, mat, shirt — don’t wear the tiger.",
+  words:[{w:"เสือ",m:"tiger",t:"rising"},{w:"เสื่อ",m:"mat",t:"low"},{w:"เสื้อ",m:"shirt",t:"falling"}]},
+ {title:"ขาว · ข่าว · ข้าว",sub:"White, news, rice — a newsroom lunch order gone wrong.",
+  words:[{w:"ขาว",m:"white",t:"rising"},{w:"ข่าว",m:"news",t:"low"},{w:"ข้าว",m:"rice",t:"falling"}]},
+ {title:"มา · ม้า · หมา",sub:"Come, horse, dog — the classic beginner trap.",
+  words:[{w:"มา",m:"to come",t:"mid"},{w:"ม้า",m:"horse",t:"high"},{w:"หมา",m:"dog",t:"rising"}]},
+ {title:"ใหม่ · ไม้ · ไม่ · ไหม",sub:"“ไม้ใหม่ไม่ไหม้ไหม” — New wood doesn’t burn, does it? One sound, five meanings.",
+  words:[{w:"ใหม่",m:"new",t:"low"},{w:"ไม้",m:"wood",t:"high"},{w:"ไม่",m:"no / not",t:"falling"},{w:"ไหม",m:"silk / question",t:"rising"}]},
+ {title:"ใกล้ · ไกล",sub:"Near vs far — same letters to your ear, opposite meanings. Taxi drivers love this one.",
+  words:[{w:"ใกล้",m:"near",t:"falling"},{w:"ไกล",m:"far",t:"mid"}]}
+];
+const SURVIVAL=[
+ {cat:"greet",th:"สวัสดีครับ / ค่ะ",ph:"sà-wàt-dii khráp / khâ",en:"Hello (male / female speaker)"},
+ {cat:"greet",th:"ขอบคุณมาก",ph:"khàawp-khun mâak",en:"Thank you very much"},
+ {cat:"greet",th:"ขอโทษ",ph:"khǎaw-thôot",en:"Sorry / Excuse me"},
+ {cat:"greet",th:"ไม่เป็นไร",ph:"mâi-pen-rai",en:"No worries — the most Thai phrase ever"},
+ {cat:"greet",th:"สบายดีไหม",ph:"sà-baai-dii mǎi",en:"How are you?"},
+ {cat:"greet",th:"ใช่ / ไม่ใช่",ph:"châi / mâi-châi",en:"Yes / No"},
+ {cat:"food",th:"ไม่เผ็ด",ph:"mâi phèt",en:"Not spicy (say it like you mean it)"},
+ {cat:"food",th:"เผ็ดนิดหน่อย",ph:"phèt nít-nàwy",en:"A little spicy"},
+ {cat:"food",th:"อร่อยมาก",ph:"à-ràwy mâak",en:"Very delicious"},
+ {cat:"food",th:"ขอน้ำหน่อย",ph:"khǎaw náam nàwy",en:"Water, please"},
+ {cat:"food",th:"เช็คบิล",ph:"chék-bin",en:"The bill, please"},
+ {cat:"food",th:"ไม่ใส่ผักชี",ph:"mâi sài phàk-chii",en:"No coriander, please 🌿"},
+ {cat:"shop",th:"เท่าไหร่",ph:"thâo-rài",en:"How much?"},
+ {cat:"shop",th:"แพงไป",ph:"phaeng pai",en:"Too expensive"},
+ {cat:"shop",th:"ลดได้ไหม",ph:"lót dâi mǎi",en:"Can you give a discount?"},
+ {cat:"shop",th:"เอาอันนี้",ph:"ao an-níi",en:"I'll take this one"},
+ {cat:"travel",th:"ห้องน้ำอยู่ไหน",ph:"hâwng-náam yùu nǎi",en:"Where is the toilet? (the #1 survival phrase)"},
+ {cat:"travel",th:"ไปสนามบิน",ph:"pai sà-nǎam-bin",en:"Go to the airport"},
+ {cat:"travel",th:"เลี้ยวซ้าย / เลี้ยวขวา",ph:"líaw sáai / líaw khwǎa",en:"Turn left / turn right"},
+ {cat:"travel",th:"ตรงไป",ph:"trong pai",en:"Go straight"},
+ {cat:"travel",th:"จอดที่นี่",ph:"jàawt thîi-nîi",en:"Stop here"},
+ {cat:"emergency",th:"ช่วยด้วย",ph:"chûai dûai",en:"Help!"},
+ {cat:"emergency",th:"ไม่เข้าใจ",ph:"mâi khâo-jai",en:"I don't understand"},
+ {cat:"emergency",th:"พูดภาษาอังกฤษได้ไหม",ph:"phûut phaa-sǎa ang-krìt dâi mǎi",en:"Do you speak English?"},
+ {cat:"emergency",th:"โรงพยาบาล",ph:"roong-phá-yaa-baan",en:"Hospital"},
+ {cat:"emergency",th:"เรียกตำรวจ",ph:"rîak tam-rùat",en:"Call the police"}
+];
+const SURV_CATS=[
+ {k:"all",label:"All",emoji:"⭐"},
+ {k:"greet",label:"Greetings",emoji:"🙏"},
+ {k:"food",label:"Food",emoji:"🍜"},
+ {k:"shop",label:"Shopping",emoji:"🛍️"},
+ {k:"travel",label:"Getting around",emoji:"🛺"},
+ {k:"emergency",label:"Emergency",emoji:"🆘"}
+];
+const NUMBERS=[
+ {n:"0",th:"ศูนย์",ph:"sǔun"},{n:"1",th:"หนึ่ง",ph:"nùeng"},{n:"2",th:"สอง",ph:"sǎawng"},
+ {n:"3",th:"สาม",ph:"sǎam"},{n:"4",th:"สี่",ph:"sìi"},{n:"5",th:"ห้า",ph:"hâa"},
+ {n:"6",th:"หก",ph:"hòk"},{n:"7",th:"เจ็ด",ph:"jèt"},{n:"8",th:"แปด",ph:"pàaet"},
+ {n:"9",th:"เก้า",ph:"kâo"},{n:"10",th:"สิบ",ph:"sìp"},{n:"20",th:"ยี่สิบ",ph:"yîi-sìp"},
+ {n:"50",th:"ห้าสิบ",ph:"hâa-sìp"},{n:"100",th:"หนึ่งร้อย",ph:"nùeng ráawy"},
+ {n:"500",th:"ห้าร้อย",ph:"hâa ráawy"},{n:"1000",th:"หนึ่งพัน",ph:"nùeng phan"}
+];
+const TONE_LABEL={mid:"Mid",low:"Low",falling:"Falling",high:"High",rising:"Rising"};
+const TONE_CVAR={mid:"--tone-mid",low:"--tone-low",falling:"--tone-fall",high:"--tone-high",rising:"--tone-rise"};
+
+/* ================= SPEECH ================= */
+const state={slow:false,thVoice:null,ttsWarned:false};
+function loadVoices(){
+  if(!("speechSynthesis" in window))return;
+  const pick=()=>{const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.toLowerCase().startsWith("th"));if(v)state.thVoice=v;};
+  pick();speechSynthesis.onvoiceschanged=pick;
+}
+loadVoices();
+function speak(text,{rate}={}){
+  if(!("speechSynthesis" in window)){toast("Audio isn’t supported in this browser — visual guides still work!");return;}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang="th-TH";
+  if(state.thVoice)u.voice=state.thVoice;
+  u.rate=rate!=null?rate:(state.slow?0.6:0.85);
+  u.pitch=1;
+  if(!state.thVoice&&!state.ttsWarned){
+    state.ttsWarned=true;
+    toast("No Thai voice found on this device — audio may sound off. Try Chrome or Safari.");
+  }
+  speechSynthesis.speak(u);
+}
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;t.classList.add("show");
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),3800);
+}
+
+/* ================= TABS (roving tabindex + arrows) ================= */
+const tabs=[...document.querySelectorAll(".tab")];
+function selectTab(tab){
+  tabs.forEach(t=>{
+    const sel=t===tab;
+    t.setAttribute("aria-selected",sel);
+    t.tabIndex=sel?0:-1;
+    document.getElementById(t.getAttribute("aria-controls")).hidden=!sel;
+  });
+  tab.focus({preventScroll:true});
+}
+tabs.forEach(t=>{
+  t.addEventListener("click",()=>selectTab(t));
+  t.addEventListener("keydown",e=>{
+    const i=tabs.indexOf(t);
+    if(e.key==="ArrowRight"||e.key==="ArrowDown"){e.preventDefault();selectTab(tabs[(i+1)%tabs.length]);}
+    if(e.key==="ArrowLeft"||e.key==="ArrowUp"){e.preventDefault();selectTab(tabs[(i-1+tabs.length)%tabs.length]);}
+    if(e.key==="Home"){e.preventDefault();selectTab(tabs[0]);}
+    if(e.key==="End"){e.preventDefault();selectTab(tabs[tabs.length-1]);}
+  });
+});
+
+/* ================= A11Y CONTROLS ================= */
+const root=document.documentElement;
+const btnTheme=document.getElementById("btnTheme");
+if(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches){
+  root.dataset.theme="dark";btnTheme.setAttribute("aria-pressed","true");btnTheme.innerHTML="☀️ <span>Light</span>";
+}
+btnTheme.addEventListener("click",()=>{
+  const dark=root.dataset.theme==="dark";
+  root.dataset.theme=dark?"":"dark";
+  btnTheme.setAttribute("aria-pressed",String(!dark));
+  btnTheme.innerHTML=dark?"🌙 <span>Dark</span>":"☀️ <span>Light</span>";
+});
+const btnSlow=document.getElementById("btnSlow");
+btnSlow.addEventListener("click",()=>{
+  state.slow=!state.slow;
+  btnSlow.setAttribute("aria-pressed",String(state.slow));
+  toast(state.slow?"🐢 Slow audio ON — great for training your ear":"Audio back to normal speed");
+});
+const btnA11y=document.getElementById("btnA11y");
+const panel=document.getElementById("a11yPanel");
+btnA11y.addEventListener("click",()=>{
+  const open=panel.hidden;
+  panel.hidden=!open;
+  btnA11y.setAttribute("aria-expanded",String(open));
+});
+function segHandler(attr,apply){
+  document.querySelectorAll(`[data-${attr}]`).forEach(b=>{
+    b.addEventListener("click",()=>{
+      b.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed","false"));
+      b.setAttribute("aria-pressed","true");
+      apply(b.dataset[attr]);
+    });
+  });
+}
+segHandler("fs",v=>root.style.setProperty("--font-scale",v));
+segHandler("hc",v=>root.dataset.contrast=v==="on"?"high":"");
+segHandler("rm",v=>root.dataset.motion=v==="on"?"reduced":"");
+segHandler("dx",v=>root.dataset.dyslexic=v==="on"?"on":"");
+
+/* ================= CONSONANT GRID ================= */
+const cGrid=document.getElementById("consonantGrid");
+function renderConsonants(filter="all"){
+  cGrid.innerHTML="";
+  let pos=0;
+  CONSONANTS.forEach((k,idx)=>{
+    if(filter!=="all"&&k.cl!==filter)return;
+    const b=document.createElement("button");
+    b.style.setProperty("--i",Math.min(pos++,20));
+    b.dataset.cl=k.cl;
+    b.className="card"+(k.ob?" obsolete":"");
+    b.setAttribute("role","listitem");
+    b.setAttribute("aria-label",`${k.n}, ${k.nr}, ${k.m}, ${CLASSNAMES[k.cl]}. Press to hear and see details.`);
+    b.innerHTML=`
+      <span class="class-tag ${k.cl}">${k.cl}</span>
+      <span class="speak-ico" aria-hidden="true">🔊</span>
+      <span class="glyph thai" aria-hidden="true">${k.c}</span>
+      <span class="romin">${k.s==="—"?"(silent)":k.s+"o"}</span>
+      <span class="name thai">${k.n}</span>
+      <span class="meaning">${k.m}</span>
+      ${k.ob?'<span class="obsolete-tag">no longer used</span>':""}`;
+    b.addEventListener("click",()=>{speak(k.n);openDetail(k);});
+    cGrid.appendChild(b);
+  });
+}
+renderConsonants();
+document.querySelectorAll('.chip[data-f]').forEach(ch=>{
+  ch.addEventListener("click",()=>{
+    document.querySelectorAll('.chip[data-f]').forEach(x=>x.setAttribute("aria-pressed","false"));
+    ch.setAttribute("aria-pressed","true");
+    renderConsonants(ch.dataset.f);
+  });
+});
+
+/* ================= DETAIL DIALOG ================= */
+const dlg=document.getElementById("detailDialog");
+let dlgCurrent=null;
+function openDetail(k){
+  dlgCurrent=k;
+  document.getElementById("detailGlyph").textContent=k.c;
+  document.getElementById("detailName").textContent=`${k.n} · ${k.nr}`;
+  document.getElementById("detailMeaning").textContent=`“${k.m}”`+(k.ob?" — historic letter, no longer used":"");
+  document.getElementById("detailRows").innerHTML=`
+    <div class="detail-row"><b>Initial sound</b><span>${k.s==="—"?"silent / glottal":k.s+" — "+k.hint}</span></div>
+    <div class="detail-row"><b>IPA</b><span>/${k.ipa}/</span></div>
+    <div class="detail-row"><b>Class</b><span>${CLASSNAMES[k.cl]}</span></div>
+    <div class="detail-row"><b>Why class matters</b><span style="font-weight:400;max-width:15rem">It decides which tones this letter can carry — the key to reading Thai.</span></div>`;
+  dlg.showModal();
+}
+document.getElementById("detailClose").addEventListener("click",()=>dlg.close());
+dlg.addEventListener("click",e=>{if(e.target===dlg)dlg.close();});
+document.getElementById("detailListen").addEventListener("click",()=>{
+  if(dlgCurrent)speak(dlgCurrent.n);
+});
+
+/* ================= VOWELS ================= */
+const vGrid=document.getElementById("vowelGrid");
+VOWEL_PAIRS.forEach(p=>{
+  const d=document.createElement("div");
+  d.className="vcard";d.setAttribute("role","listitem");
+  d.innerHTML=`<h3>${p.t} sounds</h3>
+    <div class="vpair">
+      <button class="vhalf" aria-label="Short vowel ${p.short.r}, sounds like ${p.short.h}. Press to hear.">
+        <span class="lbl">Short</span><span class="glyph thai" aria-hidden="true">${p.short.g}</span>
+        <span class="romin">${p.short.r}</span><span class="hint">${p.short.h}</span>
+      </button>
+      <button class="vhalf" aria-label="Long vowel ${p.long.r}, sounds like ${p.long.h}. Press to hear.">
+        <span class="lbl">Long</span><span class="glyph thai" aria-hidden="true">${p.long.g}</span>
+        <span class="romin">${p.long.r}</span><span class="hint">${p.long.h}</span>
+      </button>
+    </div>`;
+  const[bs,bl]=d.querySelectorAll("button");
+  bs.addEventListener("click",()=>speak(p.short.say,{rate:state.slow?0.55:0.8}));
+  bl.addEventListener("click",()=>speak(p.long.say,{rate:state.slow?0.55:0.8}));
+  vGrid.appendChild(d);
+});
+const sp=document.createElement("div");
+sp.className="vcard";sp.style.gridColumn="1 / -1";
+sp.innerHTML=`<h3>Special vowels &amp; symbols — completing the traditional 32 (สระ ๓๒)</h3><div class="vpair" style="flex-wrap:wrap">${
+  VOWEL_SPECIAL.map((v,i)=>`
+    <button class="vhalf" style="min-width:130px${v.ob?";opacity:.75":""}" data-vs="${i}" aria-label="${v.r}, sounds like ${v.h}${v.ob?", historic, no longer used":""}. Press to hear.">
+      <span class="glyph thai" aria-hidden="true"${v.ob?' style="opacity:.55"':""}>${v.g}</span>
+      <span class="romin">${v.r}</span><span class="hint">${v.h}</span>
+      ${v.ob?'<span class="obsolete-tag">no longer used</span>':""}
+    </button>`).join("")}</div>`;
+sp.querySelectorAll("[data-vs]").forEach(b=>{
+  b.addEventListener("click",()=>speak(VOWEL_SPECIAL[+b.dataset.vs].say));
+});
+vGrid.appendChild(sp);
+
+/* ================= TONES ================= */
+const tGrid=document.getElementById("toneGrid");
+TONES.forEach(t=>{
+  const d=document.createElement("button");
+  d.className="tone-card";
+  d.setAttribute("aria-label",`${t.en} tone, ${t.th}. ${t.desc}. Example word ${t.w}, meaning ${t.wm}. Press to hear.`);
+  d.innerHTML=`<h3>${t.en}</h3><div class="thname thai">${t.th}</div>
+    <svg class="tone-contour" viewBox="0 0 100 64" aria-hidden="true" focusable="false">
+      <line x1="4" y1="32" x2="96" y2="32" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="3 4"/>
+      <path d="${t.path}" style="stroke:var(${t.cvar})"/>
+    </svg>
+    <div class="tone-word thai" style="color:var(${t.cvar})">${t.w}</div>
+    <div class="tone-word-info">${t.wm} · ${t.desc}</div>`;
+  d.addEventListener("click",()=>speak(t.w,{rate:state.slow?0.5:0.7}));
+  tGrid.appendChild(d);
+});
+const pLabs=document.getElementById("pairLabs");
+PAIR_LABS.forEach(lab=>{
+  const d=document.createElement("div");
+  d.className="pair-lab";
+  d.innerHTML=`<h3 class="thai">${lab.title}</h3><p class="sub">${lab.sub}</p>
+    <div class="pair-row">${lab.words.map((w,i)=>`
+      <button class="pair-btn" data-i="${i}" aria-label="${w.w}, means ${w.m}, ${TONE_LABEL[w.t]} tone. Press to hear.">
+        <span class="w thai" style="color:var(${TONE_CVAR[w.t]})">${w.w}</span>
+        <span class="m">${w.m}</span>
+        <span class="t" style="color:var(${TONE_CVAR[w.t]})">${TONE_LABEL[w.t]}</span>
+      </button>`).join("")}</div>`;
+  d.querySelectorAll(".pair-btn").forEach(b=>{
+    b.addEventListener("click",()=>speak(lab.words[+b.dataset.i].w,{rate:state.slow?0.5:0.7}));
+  });
+  pLabs.appendChild(d);
+});
+
+/* ================= SURVIVAL ================= */
+const survFilters=document.getElementById("survFilters");
+const phraseList=document.getElementById("phraseList");
+SURV_CATS.forEach((c,i)=>{
+  const b=document.createElement("button");
+  b.className="chip";b.dataset.sc=c.k;
+  b.setAttribute("aria-pressed",i===0?"true":"false");
+  b.innerHTML=`<span aria-hidden="true">${c.emoji}</span> ${c.label}`;
+  b.addEventListener("click",()=>{
+    survFilters.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed","false"));
+    b.setAttribute("aria-pressed","true");
+    renderPhrases(c.k);
+  });
+  survFilters.appendChild(b);
+});
+function renderPhrases(cat="all"){
+  phraseList.innerHTML="";
+  let pos=0;
+  SURVIVAL.forEach(p=>{
+    if(cat!=="all"&&p.cat!==cat)return;
+    const b=document.createElement("button");
+    b.className="phrase-row";
+    b.setAttribute("role","listitem");
+    b.style.setProperty("--i",Math.min(pos++,14));
+    b.setAttribute("aria-label",`${p.th}. ${p.ph}. Means: ${p.en}. Press to hear.`);
+    b.innerHTML=`<div class="phrase-main">
+        <span class="th thai">${p.th}</span>
+        <span class="ph">${p.ph}</span>
+        <span class="en">${p.en}</span>
+      </div>
+      <span class="play" aria-hidden="true">🔊</span>`;
+    b.addEventListener("click",()=>speak(p.th.split(" / ")[0],{rate:state.slow?0.55:0.78}));
+    phraseList.appendChild(b);
+  });
+}
+renderPhrases();
+const numGrid=document.getElementById("numGrid");
+NUMBERS.forEach(nm=>{
+  const b=document.createElement("button");
+  b.className="num-card";
+  b.setAttribute("role","listitem");
+  b.setAttribute("aria-label",`Number ${nm.n}, ${nm.th}, ${nm.ph}. Press to hear.`);
+  b.innerHTML=`<span class="digit">${nm.n}</span><span class="th thai">${nm.th}</span><span class="ph">${nm.ph}</span>`;
+  b.addEventListener("click",()=>speak(nm.th,{rate:state.slow?0.55:0.8}));
+  numGrid.appendChild(b);
+});
+
+/* ================= PRACTICE ================= */
+const QUIZ_TONE_WORDS=PAIR_LABS.flatMap(l=>l.words);
+let quizMode="consonant",answer=null,locked=false,score={ok:0,streak:0,all:0};
+const elQ=document.getElementById("quizQ"),elOpts=document.getElementById("quizOpts"),
+      elFb=document.getElementById("quizFeedback"),elNext=document.getElementById("quizNext"),
+      elPlay=document.getElementById("quizPlay");
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function newQuestion(auto){
+  locked=false;elFb.textContent="";elFb.className="quiz-feedback";elNext.hidden=true;elOpts.innerHTML="";
+  if(quizMode==="consonant"){
+    elQ.textContent="Which consonant do you hear?";
+    const pool=CONSONANTS.filter(k=>!k.ob&&k.s!=="—");
+    const target=pool[Math.floor(Math.random()*pool.length)];
+    const distract=shuffle(pool.filter(k=>k.s!==target.s)).slice(0,3);
+    answer=target;
+    shuffle([target,...distract]).forEach(k=>{
+      const b=document.createElement("button");
+      b.className="quiz-opt thai";
+      b.innerHTML=`${k.c}<small>${k.s}o</small>`;
+      b.setAttribute("aria-label",`${k.c}, ${k.s}`);
+      b.addEventListener("click",()=>pick(b,k===target,`${target.c} — ${target.n} (${target.nr}), “${target.m}”`));
+      elOpts.appendChild(b);
+    });
+    if(auto)playCurrent();
+  }else if(quizMode==="number"){
+    elQ.textContent="Which number do you hear? (listen for the price!)";
+    const target=NUMBERS[Math.floor(Math.random()*NUMBERS.length)];
+    answer=target;
+    const distract=shuffle(NUMBERS.filter(k=>k.n!==target.n)).slice(0,3);
+    shuffle([target,...distract]).forEach(k=>{
+      const b=document.createElement("button");
+      b.className="quiz-opt";
+      b.innerHTML=`${k.n}<small>baht</small>`;
+      b.setAttribute("aria-label",`${k.n} baht`);
+      b.addEventListener("click",()=>pick(b,k.n===target.n,`${target.th} (${target.ph}) = ${target.n}`));
+      elOpts.appendChild(b);
+    });
+    if(auto)playCurrent();
+  }else{
+    elQ.textContent="Which tone do you hear?";
+    const target=QUIZ_TONE_WORDS[Math.floor(Math.random()*QUIZ_TONE_WORDS.length)];
+    answer=target;
+    const toneKeys=shuffle(Object.keys(TONE_LABEL)).slice(0,4);
+    if(!toneKeys.includes(target.t)){toneKeys[0]=target.t;shuffle(toneKeys);}
+    toneKeys.forEach(tk=>{
+      const b=document.createElement("button");
+      b.className="quiz-opt";
+      b.style.fontSize="1.05rem";
+      b.innerHTML=`${TONE_LABEL[tk]}<small>${TONES.find(t=>t.k===tk).th}</small>`;
+      b.addEventListener("click",()=>pick(b,tk===target.t,`${target.w} = “${target.m}” → ${TONE_LABEL[target.t]} tone`));
+      elOpts.appendChild(b);
+    });
+    if(auto)playCurrent();
+  }
+}
+function playCurrent(){
+  if(!answer)return;
+  if(quizMode==="consonant")speak(answer.c+"อ",{rate:state.slow?0.55:0.75});
+  else if(quizMode==="number")speak(answer.th+"บาท",{rate:state.slow?0.55:0.78});
+  else speak(answer.w,{rate:state.slow?0.5:0.7});
+}
+function pick(btn,correct,revealText){
+  if(locked)return;locked=true;score.all++;
+  if(correct){score.ok++;score.streak++;btn.classList.add("correct");
+    elFb.textContent="✅ Correct! "+revealText;elFb.classList.add("ok");
+  }else{score.streak=0;btn.classList.add("wrong");
+    elFb.textContent="Not quite — it was "+revealText;elFb.classList.add("no");
+    [...elOpts.children].forEach(o=>{
+      if(quizMode==="consonant"&&o.textContent.trim().startsWith(answer.c))o.classList.add("correct");
+      if(quizMode==="tone"&&o.textContent.includes(TONE_LABEL[answer.t]))o.classList.add("correct");
+      if(quizMode==="number"&&o.textContent.replace("baht","").trim()===answer.n)o.classList.add("correct");
+    });
+  }
+  document.getElementById("scoreOk").textContent=score.ok;
+  document.getElementById("scoreStreak").textContent=score.streak;
+  document.getElementById("scoreAll").textContent=score.all;
+  elNext.hidden=false;elNext.focus();
+}
+elPlay.addEventListener("click",playCurrent);
+elNext.addEventListener("click",()=>newQuestion(true));
+document.querySelectorAll(".chip[data-qm]").forEach(ch=>{
+  ch.addEventListener("click",()=>{
+    document.querySelectorAll(".chip[data-qm]").forEach(x=>x.setAttribute("aria-pressed","false"));
+    ch.setAttribute("aria-pressed","true");
+    quizMode=ch.dataset.qm;
+    score={ok:0,streak:0,all:0};
+    document.getElementById("scoreOk").textContent=0;
+    document.getElementById("scoreStreak").textContent=0;
+    document.getElementById("scoreAll").textContent=0;
+    newQuestion();
+  });
+});
+newQuestion();
+
+/* ================= CINEMATIC INTRO ================= */
+(function(){
+  const intro=document.getElementById("intro");
+  if(!intro)return;
+  let currentFilter="all";
+  document.querySelectorAll('.chip[data-f]').forEach(ch=>ch.addEventListener("click",()=>{currentFilter=ch.dataset.f;}));
+  // floating Thai glyph backdrop
+  const GL=["ก","ส","ม","อ","ไ","เ","ช","ร","ย","ง","จ","ต","น","ว","แ","ป"];
+  const fl=document.getElementById("flGlyphs");
+  for(let i=0;i<16;i++){
+    const s=document.createElement("span");
+    s.textContent=GL[i%GL.length];
+    s.style.setProperty("--x",(Math.random()*94+2)+"%");
+    s.style.setProperty("--s",(Math.random()*2.4+1.2)+"rem");
+    s.style.setProperty("--d",(Math.random()*9+9)+"s");
+    s.style.setProperty("--dl",(Math.random()*8)+"s");
+    s.style.setProperty("--o",(Math.random()*.35+.25).toFixed(2));
+    s.style.setProperty("--r",(Math.random()*24-12)+"deg");
+    fl.appendChild(s);
+  }
+  const startBtn=document.getElementById("introStart");
+  function closeIntro(){
+    if(intro.classList.contains("done"))return;
+    intro.classList.add("done");
+    document.body.classList.add("entered");
+    // re-render visible grid so entrance stagger plays after the curtain lifts
+    renderConsonants(currentFilter);
+    [...document.querySelectorAll(".vcard,.tone-card,.pair-lab")].forEach((el,i)=>el.style.setProperty("--i",i%12));
+    setTimeout(()=>intro.remove(),950);
+    const activeTab=tabs.find(t=>t.getAttribute("aria-selected")==="true");
+    if(activeTab)activeTab.focus({preventScroll:true});
+  }
+  document.getElementById("introSkip").addEventListener("click",closeIntro);
+  startBtn.addEventListener("click",closeIntro);
+  intro.addEventListener("keydown",e=>{if(e.key==="Escape")closeIntro();});
+  document.getElementById("firstWord").addEventListener("click",function(){
+    this.classList.remove("played");void this.offsetWidth;this.classList.add("played");
+    speak("สวัสดี",{rate:state.slow?0.6:0.85});
+    document.getElementById("fwReveal").hidden=false;
+    startBtn.classList.add("show");
+  });
+  // never trap the user: reveal Start after 8.5s even without interaction
+  setTimeout(()=>startBtn.classList.add("show"),8500);
+  // reduced motion (system or app setting) → skip cinema entirely
+  const rmq=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)");
+  if(rmq&&rmq.matches){intro.remove();document.body.classList.add("entered");}
+  // focus Skip first for keyboard users
+  else setTimeout(()=>document.getElementById("introSkip").focus({preventScroll:true}),400);
+})();
+</script>
+</body>
+</html>
