@@ -26,6 +26,27 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://siangthai.onemade.app/">
 <link rel="canonical" href="https://siangthai.onemade.app/">
+<meta name="keywords" content="learn thai, thai alphabet, thai consonants, thai vowels, thai tones, read thai, thai phonics, thai for foreigners, free thai lessons, thai pronunciation, survival thai phrases, thai numbers">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "SIANG · เสียง — Everyone Can Read Thai",
+  "alternateName": "SIANG Thai Phonics",
+  "url": "https://siangthai.onemade.app/",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires JavaScript",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "isAccessibleForFree": true,
+  "inLanguage": ["en", "th"],
+  "author": { "@type": "Organization", "name": "Forma Corporation" },
+  "publisher": { "@type": "Organization", "name": "Forma Corporation" },
+  "description": "Free Thai phonics for everyone: all 44 consonants, 32 vowels, 5 tones with audio and visual pitch guides, survival phrases, Thai numbers, and listening practice. No install, no signup, fully accessible.",
+  "featureList": "44 Thai consonants with audio, complete 32-vowel system, 5 tones with pitch contours, minimal-pair lab, 26 survival phrases, Thai numbers 0-1000, 3 quiz modes, WCAG AA accessibility",
+  "accessibilityFeature": ["highContrastDisplay", "displayTransformability", "audioDescription", "readingOrder", "structuralNavigation"]
+}
+</script>
 <style>
 /* ============ DESIGN TOKENS ============ */
 :root{
@@ -353,7 +374,8 @@ footer .heart{color:var(--high-c)}
 .intro-tagline span:nth-child(4){animation-delay:2.95s;color:#e0b34c}
 @keyframes fadeUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
 .intro-contour{width:min(260px,60vw);height:40px;margin:.4rem auto .5rem;display:block}
-.intro-sub{color:#c9d2ff;font-size:.98rem;font-weight:600;margin-bottom:1.4rem;opacity:0;animation:fadeUp .6s cubic-bezier(.2,.8,.3,1) 3.7s both}
+.intro-sub{color:#c9d2ff;font-size:.98rem;font-weight:600;margin-bottom:.35rem;opacity:0;animation:fadeUp .6s cubic-bezier(.2,.8,.3,1) 3.7s both}
+.intro-sub2{color:#8f9ac4;font-size:.85rem;font-weight:500;margin-bottom:1.3rem;opacity:0;animation:fadeUp .6s cubic-bezier(.2,.8,.3,1) 3.95s both}
 .intro-contour path{fill:none;stroke:#e0b34c;stroke-width:4;stroke-linecap:round;
   stroke-dasharray:260;stroke-dashoffset:260;animation:draw 1.2s ease-out 3.3s forwards}
 @keyframes draw{to{stroke-dashoffset:0}}
@@ -415,8 +437,9 @@ body.entered .section-intro{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
     <p class="intro-tagline" aria-label="Everyone Can Read Thai"><span>Everyone</span> <span>Can</span> <span>Read</span> <span>Thai.</span></p>
     <svg class="intro-contour" viewBox="0 0 200 40" aria-hidden="true" focusable="false"><path d="M8,30 C60,38 120,26 192,8"/></svg>
     <p class="intro-sub">Hear it · Read it · Speak it — with confidence</p>
+    <p class="intro-sub2">Learn Thai sounds visually — no Thai reading experience required.</p>
     <div class="fw-wrap" id="fwWrap">
-      <button id="firstWord"><span aria-hidden="true">🔊</span><span>Start with your first Thai sound</span></button>
+      <button id="firstWord"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1-3.29-2.5-4.03v8.05c1.5-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg><span>Start with your first Thai sound</span></button>
     </div>
     <div class="fw-reveal" id="fwReveal" hidden>
       <span class="thai fw-th">สวัสดี</span>
