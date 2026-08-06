@@ -27,6 +27,9 @@
 <meta property="og:url" content="https://siangthai.onemade.app/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%230a66c2%27/%3E%3Ctext x=%2750%27 y=%2772%27 font-size=%2762%27 text-anchor=%27middle%27 fill=%27white%27 font-family=%27sans-serif%27%3Eส%3C/text%3E%3C/svg%3E">
 <link rel="canonical" href="https://siangthai.onemade.app/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai+Looped:wght@400;600;700&family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
 <meta name="keywords" content="learn thai, thai alphabet, thai consonants, thai vowels, thai tones, read thai, thai phonics, thai for foreigners, free thai lessons, thai pronunciation, survival thai phrases, thai numbers">
 <script type="application/ld+json">
 {
@@ -125,7 +128,9 @@ body{
   font-family:Verdana,"Comic Sans MS",Arial,sans-serif !important;
   letter-spacing:.03em;word-spacing:.12em;
 }
-.thai{font-family:"Noto Sans Thai","Noto Sans Thai UI","Leelawadee UI",Thonburi,-apple-system,sans-serif}
+/* Classic (looped, มีหัว) is the beginner-friendly default; Modern = loopless */
+.thai{font-family:"Noto Sans Thai Looped",Thonburi,"Leelawadee UI","Noto Sans Thai",-apple-system,sans-serif}
+[data-thaifont="modern"] .thai{font-family:"Noto Sans Thai","Noto Sans Thai UI","Leelawadee UI",Thonburi,-apple-system,sans-serif}
 
 /* motion */
 [data-motion="reduced"] *,[data-motion="reduced"] *::before,[data-motion="reduced"] *::after{
@@ -505,6 +510,13 @@ body.entered .section-intro{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
       </div>
     </div>
     <div class="a11y-row">
+      <div class="a11y-label">Thai letter style<small>Classic (มีหัว, with loops) is easiest for beginners</small></div>
+      <div class="seg" role="group" aria-label="Thai letter style">
+        <button data-tf="classic" aria-pressed="true">Classic</button>
+        <button data-tf="modern" aria-pressed="false">Modern</button>
+      </div>
+    </div>
+    <div class="a11y-row">
       <div class="a11y-label">Keyboard<small>Tab to move · Enter/Space to hear · Esc closes popups</small></div>
       <div style="font-size:.82rem;color:var(--text-2)">⌨️ Fully supported</div>
     </div>
@@ -633,52 +645,57 @@ body.entered .section-intro{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
 "use strict";
 /* ================= DATA ================= */
 const CONSONANTS=[
- {c:"ก",n:"กอ ไก่",nr:"ko kai",m:"chicken",cl:"mid",s:"g",ipa:"k",hint:"g in “go” (unaspirated k)"},
- {c:"ข",n:"ขอ ไข่",nr:"kho khai",m:"egg",cl:"high",s:"kh",ipa:"kʰ",hint:"k in “kite” (with air puff)"},
- {c:"ฃ",n:"ฃอ ขวด",nr:"kho khuat",m:"bottle",cl:"high",s:"kh",ipa:"kʰ",hint:"k in “kite”",ob:1},
+ {c:"ก",n:"กอ ไก่",nr:"ko kài",m:"chicken",cl:"mid",s:"g",ipa:"k",hint:"g in “go” (unaspirated k)"},
+ {c:"ข",n:"ขอ ไข่",nr:"khǒ khài",m:"egg",cl:"high",s:"kh",ipa:"kʰ",hint:"k in “kite” (with air puff)"},
+ {c:"ฃ",n:"ฃอ ขวด",nr:"khǒ khùat",m:"bottle",cl:"high",s:"kh",ipa:"kʰ",hint:"k in “kite”",ob:1},
  {c:"ค",n:"คอ ควาย",nr:"kho khwai",m:"buffalo",cl:"low",s:"kh",ipa:"kʰ",hint:"k in “kite”"},
  {c:"ฅ",n:"ฅอ คน",nr:"kho khon",m:"person",cl:"low",s:"kh",ipa:"kʰ",hint:"k in “kite”",ob:1},
- {c:"ฆ",n:"ฆอ ระฆัง",nr:"kho ra-khang",m:"bell",cl:"low",s:"kh",ipa:"kʰ",hint:"k in “kite”"},
+ {c:"ฆ",n:"ฆอ ระฆัง",nr:"kho rá-khang",m:"bell",cl:"low",s:"kh",ipa:"kʰ",hint:"k in “kite”"},
  {c:"ง",n:"งอ งู",nr:"ngo ngu",m:"snake",cl:"low",s:"ng",ipa:"ŋ",hint:"ng in “sing” — at the start!"},
  {c:"จ",n:"จอ จาน",nr:"cho chan",m:"plate",cl:"mid",s:"j",ipa:"tɕ",hint:"j in “jar” (crisp, no air)"},
- {c:"ฉ",n:"ฉอ ฉิ่ง",nr:"cho ching",m:"cymbals",cl:"high",s:"ch",ipa:"tɕʰ",hint:"ch in “chat”"},
- {c:"ช",n:"ชอ ช้าง",nr:"cho chang",m:"elephant",cl:"low",s:"ch",ipa:"tɕʰ",hint:"ch in “chat”"},
- {c:"ซ",n:"ซอ โซ่",nr:"so so",m:"chain",cl:"low",s:"s",ipa:"s",hint:"s in “sun”"},
+ {c:"ฉ",n:"ฉอ ฉิ่ง",nr:"chǒ chìng",m:"cymbals",cl:"high",s:"ch",ipa:"tɕʰ",hint:"ch in “chat”"},
+ {c:"ช",n:"ชอ ช้าง",nr:"cho cháang",m:"elephant",cl:"low",s:"ch",ipa:"tɕʰ",hint:"ch in “chat”"},
+ {c:"ซ",n:"ซอ โซ่",nr:"so sôo",m:"chain",cl:"low",s:"s",ipa:"s",hint:"s in “sun”"},
  {c:"ฌ",n:"ฌอ เฌอ",nr:"cho choe",m:"tree",cl:"low",s:"ch",ipa:"tɕʰ",hint:"ch in “chat” (rare letter)"},
- {c:"ญ",n:"ญอ หญิง",nr:"yo ying",m:"woman",cl:"low",s:"y",ipa:"j",hint:"y in “yes”"},
- {c:"ฎ",n:"ฎอ ชฎา",nr:"do cha-da",m:"headdress",cl:"mid",s:"d",ipa:"d",hint:"d in “dog”"},
- {c:"ฏ",n:"ฏอ ปฏัก",nr:"to pa-tak",m:"goad",cl:"mid",s:"t",ipa:"t",hint:"t in “stop” (no air puff)"},
- {c:"ฐ",n:"ฐอ ฐาน",nr:"tho than",m:"pedestal",cl:"high",s:"th",ipa:"tʰ",hint:"t in “top” (with air)"},
- {c:"ฑ",n:"ฑอ มณโฑ",nr:"tho montho",m:"Montho (queen)",cl:"low",s:"th",ipa:"tʰ",hint:"t in “top”"},
- {c:"ฒ",n:"ฒอ ผู้เฒ่า",nr:"tho phu-thao",m:"elder",cl:"low",s:"th",ipa:"tʰ",hint:"t in “top”"},
- {c:"ณ",n:"ณอ เณร",nr:"no nen",m:"novice monk",cl:"low",s:"n",ipa:"n",hint:"n in “nice”"},
- {c:"ด",n:"ดอ เด็ก",nr:"do dek",m:"child",cl:"mid",s:"d",ipa:"d",hint:"d in “dog”"},
- {c:"ต",n:"ตอ เต่า",nr:"to tao",m:"turtle",cl:"mid",s:"t",ipa:"t",hint:"t in “stop” (no air puff)"},
- {c:"ถ",n:"ถอ ถุง",nr:"tho thung",m:"sack",cl:"high",s:"th",ipa:"tʰ",hint:"t in “top” (with air)"},
- {c:"ท",n:"ทอ ทหาร",nr:"tho tha-han",m:"soldier",cl:"low",s:"th",ipa:"tʰ",hint:"t in “top”"},
+ {c:"ญ",n:"ญอ หญิง",nr:"yo yǐng",m:"woman",cl:"low",s:"y",ipa:"j",hint:"y in “yes”"},
+ {c:"ฎ",n:"ฎอ ชฎา",nr:"do chá-daa",m:"headdress",cl:"mid",s:"d",ipa:"d",hint:"d in “dog”"},
+ {c:"ฏ",n:"ฏอ ปฏัก",nr:"to pà-tàk",m:"goad",cl:"mid",s:"t",ipa:"t",hint:"t in “stop” (no air puff)"},
+ {c:"ฐ",n:"ฐอ ฐาน",nr:"thǒ thǎan",m:"pedestal",cl:"high",s:"th",ipa:"tʰ",hint:"t in “top” (with air)"},
+ {c:"ฑ",n:"ฑอ มณโฑ",nr:"tho mon-thoo",m:"Montho (queen)",cl:"low",s:"th",ipa:"tʰ",hint:"t in “top”"},
+ {c:"ฒ",n:"ฒอ ผู้เฒ่า",nr:"tho phûu-thâo",m:"elder",cl:"low",s:"th",ipa:"tʰ",hint:"t in “top”"},
+ {c:"ณ",n:"ณอ เณร",nr:"no neen",m:"novice monk",cl:"low",s:"n",ipa:"n",hint:"n in “nice”"},
+ {c:"ด",n:"ดอ เด็ก",nr:"do dèk",m:"child",cl:"mid",s:"d",ipa:"d",hint:"d in “dog”"},
+ {c:"ต",n:"ตอ เต่า",nr:"to tào",m:"turtle",cl:"mid",s:"t",ipa:"t",hint:"t in “stop” (no air puff)"},
+ {c:"ถ",n:"ถอ ถุง",nr:"thǒ thǔng",m:"sack",cl:"high",s:"th",ipa:"tʰ",hint:"t in “top” (with air)"},
+ {c:"ท",n:"ทอ ทหาร",nr:"tho thá-hǎan",m:"soldier",cl:"low",s:"th",ipa:"tʰ",hint:"t in “top”"},
  {c:"ธ",n:"ธอ ธง",nr:"tho thong",m:"flag",cl:"low",s:"th",ipa:"tʰ",hint:"t in “top”"},
- {c:"น",n:"นอ หนู",nr:"no nu",m:"mouse",cl:"low",s:"n",ipa:"n",hint:"n in “nice”"},
- {c:"บ",n:"บอ ใบไม้",nr:"bo bai-mai",m:"leaf",cl:"mid",s:"b",ipa:"b",hint:"b in “boy”"},
- {c:"ป",n:"ปอ ปลา",nr:"po pla",m:"fish",cl:"mid",s:"p",ipa:"p",hint:"p in “spin” (no air puff)"},
- {c:"ผ",n:"ผอ ผึ้ง",nr:"pho phueng",m:"bee",cl:"high",s:"ph",ipa:"pʰ",hint:"p in “pie” (with air)"},
- {c:"ฝ",n:"ฝอ ฝา",nr:"fo fa",m:"lid",cl:"high",s:"f",ipa:"f",hint:"f in “fun”"},
- {c:"พ",n:"พอ พาน",nr:"pho phan",m:"tray",cl:"low",s:"ph",ipa:"pʰ",hint:"p in “pie”"},
+ {c:"น",n:"นอ หนู",nr:"no nǔu",m:"mouse",cl:"low",s:"n",ipa:"n",hint:"n in “nice”"},
+ {c:"บ",n:"บอ ใบไม้",nr:"bo bai-máai",m:"leaf",cl:"mid",s:"b",ipa:"b",hint:"b in “boy”"},
+ {c:"ป",n:"ปอ ปลา",nr:"po plaa",m:"fish",cl:"mid",s:"p",ipa:"p",hint:"p in “spin” (no air puff)"},
+ {c:"ผ",n:"ผอ ผึ้ง",nr:"phǒ phûeng",m:"bee",cl:"high",s:"ph",ipa:"pʰ",hint:"p in “pie” (with air)"},
+ {c:"ฝ",n:"ฝอ ฝา",nr:"fǒ fǎa",m:"lid",cl:"high",s:"f",ipa:"f",hint:"f in “fun”"},
+ {c:"พ",n:"พอ พาน",nr:"pho phaan",m:"tray",cl:"low",s:"ph",ipa:"pʰ",hint:"p in “pie”"},
  {c:"ฟ",n:"ฟอ ฟัน",nr:"fo fan",m:"teeth",cl:"low",s:"f",ipa:"f",hint:"f in “fun”"},
- {c:"ภ",n:"ภอ สำเภา",nr:"pho sam-phao",m:"sailing ship",cl:"low",s:"ph",ipa:"pʰ",hint:"p in “pie”"},
- {c:"ม",n:"มอ ม้า",nr:"mo ma",m:"horse",cl:"low",s:"m",ipa:"m",hint:"m in “man”"},
- {c:"ย",n:"ยอ ยักษ์",nr:"yo yak",m:"giant",cl:"low",s:"y",ipa:"j",hint:"y in “yes”"},
+ {c:"ภ",n:"ภอ สำเภา",nr:"pho sǎm-phao",m:"sailing ship",cl:"low",s:"ph",ipa:"pʰ",hint:"p in “pie”"},
+ {c:"ม",n:"มอ ม้า",nr:"mo máa",m:"horse",cl:"low",s:"m",ipa:"m",hint:"m in “man”"},
+ {c:"ย",n:"ยอ ยักษ์",nr:"yo yák",m:"giant",cl:"low",s:"y",ipa:"j",hint:"y in “yes”"},
  {c:"ร",n:"รอ เรือ",nr:"ro ruea",m:"boat",cl:"low",s:"r",ipa:"r",hint:"rolled r (often l in casual speech)"},
  {c:"ล",n:"ลอ ลิง",nr:"lo ling",m:"monkey",cl:"low",s:"l",ipa:"l",hint:"l in “love”"},
- {c:"ว",n:"วอ แหวน",nr:"wo waen",m:"ring",cl:"low",s:"w",ipa:"w",hint:"w in “win”"},
- {c:"ศ",n:"ศอ ศาลา",nr:"so sala",m:"pavilion",cl:"high",s:"s",ipa:"s",hint:"s in “sun”"},
- {c:"ษ",n:"ษอ ฤๅษี",nr:"so ruesi",m:"hermit",cl:"high",s:"s",ipa:"s",hint:"s in “sun”"},
- {c:"ส",n:"สอ เสือ",nr:"so suea",m:"tiger",cl:"high",s:"s",ipa:"s",hint:"s in “sun”"},
- {c:"ห",n:"หอ หีบ",nr:"ho hip",m:"chest (box)",cl:"high",s:"h",ipa:"h",hint:"h in “hat”"},
- {c:"ฬ",n:"ฬอ จุฬา",nr:"lo chula",m:"star-shaped kite",cl:"low",s:"l",ipa:"l",hint:"l in “love”"},
- {c:"อ",n:"ออ อ่าง",nr:"o ang",m:"basin",cl:"mid",s:"—",ipa:"ʔ",hint:"silent placeholder / glottal stop"},
- {c:"ฮ",n:"ฮอ นกฮูก",nr:"ho nok-huk",m:"owl",cl:"low",s:"h",ipa:"h",hint:"h in “hat”"}
+ {c:"ว",n:"วอ แหวน",nr:"wo wǎen",m:"ring",cl:"low",s:"w",ipa:"w",hint:"w in “win”"},
+ {c:"ศ",n:"ศอ ศาลา",nr:"sǒ sǎa-laa",m:"pavilion",cl:"high",s:"s",ipa:"s",hint:"s in “sun”"},
+ {c:"ษ",n:"ษอ ฤๅษี",nr:"sǒ ruue-sǐi",m:"hermit",cl:"high",s:"s",ipa:"s",hint:"s in “sun”"},
+ {c:"ส",n:"สอ เสือ",nr:"sǒ sǔea",m:"tiger",cl:"high",s:"s",ipa:"s",hint:"s in “sun”"},
+ {c:"ห",n:"หอ หีบ",nr:"hǒ hìip",m:"chest (box)",cl:"high",s:"h",ipa:"h",hint:"h in “hat”"},
+ {c:"ฬ",n:"ฬอ จุฬา",nr:"lo jù-laa",m:"star-shaped kite",cl:"low",s:"l",ipa:"l",hint:"l in “love”"},
+ {c:"อ",n:"ออ อ่าง",nr:"o àang",m:"basin",cl:"mid",s:"—",ipa:"ʔ",hint:"silent placeholder / glottal stop"},
+ {c:"ฮ",n:"ฮอ นกฮูก",nr:"ho nók-hûuk",m:"owl",cl:"low",s:"h",ipa:"h",hint:"h in “hat”"}
 ];
 const CLASSNAMES={mid:"Middle class",high:"High class",low:"Low class"};
+const FINALS={"ก":"-k","ข":"-k","ฃ":"-k","ค":"-k","ฅ":"-k","ฆ":"-k","ง":"-ng",
+ "จ":"-t","ช":"-t","ซ":"-t","ฎ":"-t","ฏ":"-t","ฐ":"-t","ฑ":"-t","ฒ":"-t","ด":"-t","ต":"-t","ถ":"-t","ท":"-t","ธ":"-t","ศ":"-t","ษ":"-t","ส":"-t",
+ "ญ":"-n","ณ":"-n","น":"-n","ร":"-n","ล":"-n","ฬ":"-n",
+ "บ":"-p","ป":"-p","พ":"-p","ฟ":"-p","ภ":"-p","ม":"-m","ย":"-y (glide)","ว":"-w (glide)",
+ "ฉ":null,"ฌ":null,"ผ":null,"ฝ":null,"ห":null,"อ":null,"ฮ":null};
 
 const VOWEL_PAIRS=[
  {t:"A",short:{g:"อะ",r:"a",h:"u in “nut”",say:"อะ"},long:{g:"อา",r:"aa",h:"a in “father”",say:"อา"}},
@@ -706,7 +723,7 @@ const VOWEL_SPECIAL=[
 ];
 
 const TONES=[
- {k:"mid",en:"Mid",th:"สามัญ (saman)",w:"มา",wm:"to come",path:"M6,30 L94,30",cvar:"--tone-mid",desc:"Flat, steady voice",pitch:1},
+ {k:"mid",en:"Mid",th:"สามัญ (saman)",w:"มา",wm:"to come",path:"M6,29 C36,30.5 64,33 94,35.5",cvar:"--tone-mid",desc:"Steady, drifting slightly down",pitch:1},
  {k:"low",en:"Low",th:"เอก (ek)",w:"ป่า",wm:"forest",path:"M6,34 C36,42 66,50 94,53",cvar:"--tone-low",desc:"Starts low, stays low",pitch:0.8},
  {k:"falling",en:"Falling",th:"โท (tho)",w:"ไม่",wm:"no / not",path:"M6,26 C30,10 52,16 94,54",cvar:"--tone-fall",desc:"Rises briefly, then drops — like “Oh!”",pitch:1.05},
  {k:"high",en:"High",th:"ตรี (tri)",w:"ม้า",wm:"horse",path:"M6,34 C38,30 68,18 94,8",cvar:"--tone-high",desc:"High and climbing",pitch:1.3},
@@ -861,6 +878,7 @@ segHandler("fs",v=>root.style.setProperty("--font-scale",v));
 segHandler("hc",v=>root.dataset.contrast=v==="on"?"high":"");
 segHandler("rm",v=>root.dataset.motion=v==="on"?"reduced":"");
 segHandler("dx",v=>root.dataset.dyslexic=v==="on"?"on":"");
+segHandler("tf",v=>root.dataset.thaifont=v==="modern"?"modern":"");
 
 /* ================= CONSONANT GRID ================= */
 const cGrid=document.getElementById("consonantGrid");
@@ -879,7 +897,7 @@ function renderConsonants(filter="all"){
       <span class="class-tag ${k.cl}">${k.cl}</span>
       <span class="speak-ico" aria-hidden="true">🔊</span>
       <span class="glyph thai" aria-hidden="true">${k.c}</span>
-      <span class="romin">${k.s==="—"?"(silent)":k.s+"o"}</span>
+      <span class="romin">${k.s==="—"?"(silent)":k.s+(k.cl==="high"?"ǒ":"o")}</span>
       <span class="name thai">${k.n}</span>
       <span class="meaning">${k.m}</span>
       ${k.ob?'<span class="obsolete-tag">no longer used</span>':""}`;
@@ -907,6 +925,7 @@ function openDetail(k){
   document.getElementById("detailRows").innerHTML=`
     <div class="detail-row"><b>Initial sound</b><span>${k.s==="—"?"silent / glottal":k.s+" — "+k.hint}</span></div>
     <div class="detail-row"><b>IPA</b><span>/${k.ipa}/</span></div>
+    <div class="detail-row"><b>Final sound</b><span>${FINALS[k.c]?FINALS[k.c]+" — e.g. how it sounds at the end of a word":"not used as a final consonant"}</span></div>
     <div class="detail-row"><b>Class</b><span>${CLASSNAMES[k.cl]}</span></div>
     <div class="detail-row"><b>Why class matters</b><span style="font-weight:400;max-width:15rem">It decides which tones this letter can carry — the key to reading Thai.</span></div>`;
   dlg.showModal();
