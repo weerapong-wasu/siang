@@ -224,6 +224,28 @@ section[role="tabpanel"][hidden]{display:none}
 .qs-tag.real{background:var(--low-bg);color:var(--low-c)}
 .qs-tag.practice{background:var(--surface-2);color:var(--text-3)}
 
+/* sound map graph (v3.1 bonus) */
+.qs-graph-legend{display:flex;flex-wrap:wrap;gap:1.1rem;justify-content:center;margin:.9rem 0;font-size:.8rem;color:var(--text-2)}
+.qs-glegend{display:inline-flex;align-items:center;gap:.4rem}
+.qs-glegend .dot{width:13px;height:13px;border-radius:50%;display:inline-block;flex:none}
+.qs-glegend .dot.consonant{background:var(--accent)}
+.qs-glegend .dot.vowel{background:var(--high-c);border-radius:2px;transform:rotate(45deg)}
+.qs-glegend .dot.real{background:var(--low-c)}
+.qs-glegend .dot.practice{background:var(--surface-2);border:1.5px dashed var(--text-3)}
+.qs-graph-svg{display:block;width:100%;height:auto;aspect-ratio:800/560;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.qs-graph-edges line{stroke:var(--border);stroke-width:1.2;transition:stroke .2s,stroke-width .2s}
+.qs-graph-edges line.qs-edge-on{stroke:var(--accent);stroke-width:2.4}
+.qs-node{cursor:pointer;transition:opacity .2s}
+.qs-node.dim{opacity:.15}
+.qs-node .qs-shape{stroke:var(--surface);stroke-width:2}
+.qs-node-consonant .qs-shape{fill:var(--accent)}
+.qs-node-vowel .qs-shape{fill:var(--high-c)}
+.qs-node-real .qs-shape{fill:var(--low-c)}
+.qs-node-practice .qs-shape{fill:var(--surface-2);stroke:var(--text-3);stroke-dasharray:3 2}
+.qs-node-label{font-size:13px;fill:var(--bg);pointer-events:none;font-weight:700}
+.qs-node-practice .qs-node-label{fill:var(--text)}
+.qs-node:focus-visible .qs-shape{stroke:var(--gold);stroke-width:3}
+
 /* vowel cards */
 .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.8rem}
 .vcard{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow)}
@@ -556,6 +578,21 @@ body.entered .section-intro{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
     <p>Just <b>6 consonants</b> (ก ด ต น ม ร) + <b>3 vowels</b> (า ี ไ) unlock real words. Every word below is naturally mid tone, so there are no tone marks to learn yet. Master this page first, then explore the full 44 consonants and 32 vowels whenever you're ready.</p>
   </div>
   <div class="qs-words grid" id="qsWords" role="list"></div>
+
+  <div style="text-align:center;margin-top:2rem">
+    <button class="chip" id="qsGraphToggle" type="button" aria-expanded="false" aria-controls="qsGraphPanel">🕸️ Show the Sound Map (bonus — see how they connect)</button>
+  </div>
+  <div id="qsGraphPanel" hidden>
+    <p style="text-align:center;font-size:.82rem;color:var(--text-2);margin-top:.8rem">Just for fun — a visual map of how consonants and vowels combine. Not required for learning; the list below has the same information as text.</p>
+    <div class="qs-graph-legend">
+      <span class="qs-glegend"><span class="dot consonant" aria-hidden="true"></span>Consonant</span>
+      <span class="qs-glegend"><span class="dot vowel" aria-hidden="true"></span>Vowel</span>
+      <span class="qs-glegend"><span class="dot real" aria-hidden="true"></span>✓ Real word</span>
+      <span class="qs-glegend"><span class="dot practice" aria-hidden="true"></span>Practice syllable</span>
+    </div>
+    <svg id="qsGraphSvg" class="qs-graph-svg" role="img" aria-label="Interactive sound map of how the 6 consonants and 3 vowels combine into words. This is decorative — the reading matrix list below covers the same information as text."></svg>
+  </div>
+
   <div class="section-intro" style="margin-top:2.2rem">
     <h2 style="font-size:1.15rem">The reading matrix — all 18 combinations</h2>
     <p>Every pairing of these 6 consonants × 3 vowels. <span class="qs-tag real">✓ real word</span> means you can use it today; <span class="qs-tag practice">practice</span> means it's a building-block sound, not a standalone word yet — no sugarcoating, just what's true.</p>
@@ -964,6 +1001,144 @@ QS_MATRIX.forEach((x,i)=>{
 document.getElementById("qsToConsonants").addEventListener("click",()=>{
   selectTab(document.getElementById("tab-consonants"));
 });
+
+/* ================= SOUND MAP — bonus graph (v3.1) ================= */
+(function(){
+  const toggleBtn=document.getElementById("qsGraphToggle");
+  const panel=document.getElementById("qsGraphPanel");
+  const svgEl=document.getElementById("qsGraphSvg");
+  let built=false;
+  toggleBtn.addEventListener("click",()=>{
+    const opening=panel.hidden;
+    panel.hidden=!opening;
+    toggleBtn.setAttribute("aria-expanded",String(opening));
+    toggleBtn.textContent=opening?"🕸️ Hide the Sound Map":"🕸️ Show the Sound Map (bonus — see how they connect)";
+    if(opening&&!built){buildGraph();built=true;}
+  });
+
+  function qsVowelSay(vkey){
+    if(vkey==="aa")return VOWEL_PAIRS.find(p=>p.t==="A").long.say;
+    if(vkey==="ii")return VOWEL_PAIRS.find(p=>p.t==="I").long.say;
+    if(vkey==="ai")return VOWEL_SPECIAL.find(v=>v.g==="ไอ").say;
+    return vkey;
+  }
+
+  function buildGraph(){
+    const W=800,H=560;
+    const consonants=[...new Set(QS_MATRIX.map(x=>x.c))];
+    const vowelKeys=QS_VOWELS.map(v=>v.key);
+    const nodes=[];
+    consonants.forEach((c,i)=>nodes.push({id:"c:"+c,type:"consonant",label:c,x:W*0.28+((i%3)*30),y:H*0.25+Math.floor(i/3)*180+(Math.random()-.5)*40}));
+    vowelKeys.forEach((v,i)=>nodes.push({id:"v:"+v,type:"vowel",label:QS_VOWELS.find(x=>x.key===v).glyph,x:W*0.74+((i%2)*30),y:H*0.3+i*140+(Math.random()-.5)*40}));
+    QS_MATRIX.forEach((x,i)=>nodes.push({id:"w:"+i,type:x.real?"real":"practice",label:qsSyllable(x.c,x.v),meaning:x.m,x:W/2+(Math.random()-.5)*220,y:H/2+(Math.random()-.5)*260}));
+    const idx={};nodes.forEach((n,i)=>idx[n.id]=i);
+    const edges=[];
+    QS_MATRIX.forEach((x,i)=>{edges.push({a:"c:"+x.c,b:"w:"+i});edges.push({a:"v:"+x.v,b:"w:"+i});});
+
+    function step(){
+      for(let i=0;i<nodes.length;i++){
+        for(let j=i+1;j<nodes.length;j++){
+          const a=nodes[i],b=nodes[j];
+          let dx=a.x-b.x,dy=a.y-b.y;
+          const d2=Math.max(dx*dx+dy*dy,4);
+          const d=Math.sqrt(d2);
+          const f=2400/d2;
+          dx/=d;dy/=d;
+          a.x+=dx*f;a.y+=dy*f;b.x-=dx*f;b.y-=dy*f;
+        }
+      }
+      edges.forEach(e=>{
+        const a=nodes[idx[e.a]],b=nodes[idx[e.b]];
+        let dx=b.x-a.x,dy=b.y-a.y;
+        const d=Math.sqrt(dx*dx+dy*dy)||0.01;
+        const f=(d-95)*0.02;
+        dx/=d;dy/=d;
+        a.x+=dx*f;a.y+=dy*f;b.x-=dx*f;b.y-=dy*f;
+      });
+      nodes.forEach(n=>{
+        n.x+=(W/2-n.x)*0.004;n.y+=(H/2-n.y)*0.004;
+        n.x=Math.max(28,Math.min(W-28,n.x));n.y=Math.max(28,Math.min(H-28,n.y));
+      });
+    }
+    const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    for(let k=0;k<(reduced?450:140);k++)step();
+
+    const NS="http://www.w3.org/2000/svg";
+    svgEl.setAttribute("viewBox","0 0 "+W+" "+H);
+    svgEl.innerHTML="";
+    const edgeGroup=document.createElementNS(NS,"g");edgeGroup.setAttribute("class","qs-graph-edges");
+    const nodeGroup=document.createElementNS(NS,"g");
+    svgEl.appendChild(edgeGroup);svgEl.appendChild(nodeGroup);
+
+    const edgeEls=edges.map(e=>{
+      const line=document.createElementNS(NS,"line");
+      line.dataset.a=e.a;line.dataset.b=e.b;
+      edgeGroup.appendChild(line);
+      return line;
+    });
+
+    const nodeEls=nodes.map(n=>{
+      const g=document.createElementNS(NS,"g");
+      g.setAttribute("class","qs-node qs-node-"+n.type);
+      g.setAttribute("tabindex","0");
+      g.setAttribute("role","button");
+      const label=n.type==="consonant"?"Consonant "+n.label:n.type==="vowel"?"Vowel "+n.label:n.type==="real"?n.label+", real word, means "+n.meaning:n.label+", practice syllable";
+      g.setAttribute("aria-label",label+". Press to hear and see connections.");
+      let shape;
+      if(n.type==="vowel"){
+        shape=document.createElementNS(NS,"rect");
+        shape.setAttribute("x",-11);shape.setAttribute("y",-11);
+        shape.setAttribute("width",22);shape.setAttribute("height",22);
+        shape.setAttribute("transform","rotate(45)");
+      }else{
+        shape=document.createElementNS(NS,"circle");
+        shape.setAttribute("r",n.type==="consonant"?19:14);
+      }
+      shape.setAttribute("class","qs-shape");
+      g.appendChild(shape);
+      const text=document.createElementNS(NS,"text");
+      text.setAttribute("text-anchor","middle");
+      text.setAttribute("dy","0.35em");
+      text.setAttribute("class","qs-node-label thai");
+      text.textContent=n.label;
+      g.appendChild(text);
+      function activate(){
+        const say=n.type==="consonant"?CONSONANTS.find(k=>k.c===n.label).n:n.type==="vowel"?qsVowelSay(n.id.slice(2)):n.label;
+        speak(say,{rate:state.slow?0.6:0.85});
+        highlight(n.id);
+      }
+      g.addEventListener("click",activate);
+      g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();activate();}});
+      g.addEventListener("mouseenter",()=>highlight(n.id));
+      g.addEventListener("focus",()=>highlight(n.id));
+      g.addEventListener("mouseleave",clearHighlight);
+      g.addEventListener("blur",clearHighlight);
+      nodeGroup.appendChild(g);
+      return g;
+    });
+
+    function render(){
+      nodeEls.forEach((g,i)=>g.setAttribute("transform","translate("+nodes[i].x+","+nodes[i].y+")"));
+      edgeEls.forEach(line=>{
+        const a=nodes[idx[line.dataset.a]],b=nodes[idx[line.dataset.b]];
+        line.setAttribute("x1",a.x);line.setAttribute("y1",a.y);
+        line.setAttribute("x2",b.x);line.setAttribute("y2",b.y);
+      });
+    }
+    render();
+
+    function highlight(id){
+      const connected=new Set([id]);
+      edges.forEach(e=>{if(e.a===id)connected.add(e.b);if(e.b===id)connected.add(e.a);});
+      nodeEls.forEach((g,i)=>g.classList.toggle("dim",!connected.has(nodes[i].id)));
+      edgeEls.forEach(line=>line.classList.toggle("qs-edge-on",line.dataset.a===id||line.dataset.b===id));
+    }
+    function clearHighlight(){
+      nodeEls.forEach(g=>g.classList.remove("dim"));
+      edgeEls.forEach(line=>line.classList.remove("qs-edge-on"));
+    }
+  }
+})();
 
 /* ================= CONSONANT GRID ================= */
 const cGrid=document.getElementById("consonantGrid");
