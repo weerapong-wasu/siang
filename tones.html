@@ -250,7 +250,7 @@ footer p{max-width:60rem;margin:.35rem auto}
           <div class="big" id="resWord" lang="th">กา</div>
           <div style="font-size:.9rem;color:var(--muted)" id="resGloss">crow</div>
         </div>
-        <svg class="pitch" viewBox="0 0 100 60" style="max-width:110px" aria-hidden="true"><path id="resPath" d="M6,30 L94,30" stroke="var(--tone-mid)"></path></svg>
+        <svg class="pitch" viewBox="0 0 100 60" style="max-width:110px" aria-hidden="true"><path id="resPath" d="M6,29 C36,30.5 64,33 94,35.5" stroke="var(--tone-mid)"></path></svg>
         <div>
           <div class="tname" id="resTone">Mid tone <span lang="th">· สามัญ</span></div>
           <button class="speakbtn" id="resSpeak" type="button">🔊 Hear it</button>
@@ -344,7 +344,7 @@ function speak(text,{rate,pitch}={}){
 
 /* ============ Tone data (identical curves/pitch to SIANG) ============ */
 const TONES={
-  mid:{en:"Mid",th:"สามัญ",path:"M6,30 L94,30",cvar:"--tone-mid",pitch:1,desc:"Flat, steady voice"},
+  mid:{en:"Mid",th:"สามัญ",path:"M6,29 C36,30.5 64,33 94,35.5",cvar:"--tone-mid",pitch:1,desc:"Steady, drifting slightly down"},
   low:{en:"Low",th:"เอก",path:"M6,34 C36,42 66,50 94,53",cvar:"--tone-low",pitch:0.8,desc:"Starts low, stays low"},
   fall:{en:"Falling",th:"โท",path:"M6,26 C30,10 52,16 94,54",cvar:"--tone-fall",pitch:1.05,desc:"Rises briefly, then drops — like \u201cOh!\u201d"},
   high:{en:"High",th:"ตรี",path:"M6,34 C38,30 68,18 94,8",cvar:"--tone-high",pitch:1.3,desc:"High and climbing"},
