@@ -217,6 +217,13 @@ section[role="tabpanel"][hidden]{display:none}
 .card.obsolete .glyph{opacity:.45}
 .obsolete-tag{font-size:.62rem;color:var(--text-3);border:1px dashed var(--text-3);border-radius:999px;padding:.05rem .45rem;margin-top:.15rem}
 
+/* quick start (v3.1) */
+.qs-words .card{border-color:var(--low-c);border-width:2px}
+.qs-matrix{display:grid;grid-template-columns:repeat(auto-fill,minmax(126px,1fr));gap:.7rem}
+.qs-tag{display:inline-block;font-size:.62rem;font-weight:700;border-radius:999px;padding:.1rem .5rem;margin-top:.2rem}
+.qs-tag.real{background:var(--low-bg);color:var(--low-c)}
+.qs-tag.practice{background:var(--surface-2);color:var(--text-3)}
+
 /* vowel cards */
 .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.8rem}
 .vcard{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1rem;box-shadow:var(--shadow)}
@@ -227,7 +234,6 @@ section[role="tabpanel"][hidden]{display:none}
 .vhalf .glyph{font-size:1.9rem;font-weight:600}
 .vhalf .lbl{font-size:.68rem;font-weight:800;letter-spacing:.05em;color:var(--text-3);text-transform:uppercase}
 .vhalf .romin{font-size:.86rem;font-weight:700}
-.vhalf .romin .ipa{font-size:.72rem;font-weight:500;color:var(--text-3);font-style:normal;font-family:"Noto Sans","Segoe UI",system-ui,sans-serif}
 .vhalf .hint{font-size:.7rem;color:var(--text-2)}
 
 /* tones */
@@ -532,7 +538,8 @@ body.entered .section-intro{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
 
 <nav class="tabs" aria-label="Sections">
   <div class="tablist" role="tablist">
-    <button class="tab" role="tab" id="tab-consonants" aria-controls="panel-consonants" aria-selected="true"><span class="emoji" aria-hidden="true">🔤</span>Consonants</button>
+    <button class="tab" role="tab" id="tab-quickstart" aria-controls="panel-quickstart" aria-selected="true"><span class="emoji" aria-hidden="true">🚀</span>Quick Start</button>
+    <button class="tab" role="tab" id="tab-consonants" aria-controls="panel-consonants" aria-selected="false" tabindex="-1"><span class="emoji" aria-hidden="true">🔤</span>Consonants</button>
     <button class="tab" role="tab" id="tab-vowels" aria-controls="panel-vowels" aria-selected="false" tabindex="-1"><span class="emoji" aria-hidden="true">🎈</span>Vowels</button>
     <button class="tab" role="tab" id="tab-tones" aria-controls="panel-tones" aria-selected="false" tabindex="-1"><span class="emoji" aria-hidden="true">🎵</span>Tones</button>
     <button class="tab" role="tab" id="tab-survival" aria-controls="panel-survival" aria-selected="false" tabindex="-1"><span class="emoji" aria-hidden="true">🧳</span>Survival</button>
@@ -542,8 +549,26 @@ body.entered .section-intro{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
 
 <main id="main">
 
+<!-- ===== QUICK START (v3.1) ===== -->
+<section role="tabpanel" id="panel-quickstart" aria-labelledby="tab-quickstart">
+  <div class="section-intro">
+    <h2>Read your first real Thai words — today</h2>
+    <p>Just <b>6 consonants</b> (ก ด ต น ม ร) + <b>3 vowels</b> (า ี ไ) unlock real words. Every word below is naturally mid tone, so there are no tone marks to learn yet. Master this page first, then explore the full 44 consonants and 32 vowels whenever you're ready.</p>
+  </div>
+  <div class="qs-words grid" id="qsWords" role="list"></div>
+  <div class="section-intro" style="margin-top:2.2rem">
+    <h2 style="font-size:1.15rem">The reading matrix — all 18 combinations</h2>
+    <p>Every pairing of these 6 consonants × 3 vowels. <span class="qs-tag real">✓ real word</span> means you can use it today; <span class="qs-tag practice">practice</span> means it's a building-block sound, not a standalone word yet — no sugarcoating, just what's true.</p>
+  </div>
+  <div class="qs-matrix" id="qsMatrix" role="list"></div>
+  <p style="text-align:center;margin-top:1.6rem;color:var(--text-2);font-size:.85rem">Sound not English-friendly? <span class="thai">ใน</span> ("nai" = in) uses a <i>different</i> vowel (ใ, not ไ) even though it sounds the same — you'll meet it in the full 32 vowels.</p>
+  <div style="text-align:center;margin-top:1.6rem">
+    <button class="chip" id="qsToConsonants" type="button" aria-pressed="false">Ready for all 44 consonants →</button>
+  </div>
+</section>
+
 <!-- ===== CONSONANTS ===== -->
-<section role="tabpanel" id="panel-consonants" aria-labelledby="tab-consonants">
+<section role="tabpanel" id="panel-consonants" aria-labelledby="tab-consonants" hidden>
   <div class="section-intro">
     <h2>The 44 Consonants</h2>
     <p>Every Thai consonant belongs to one of three <b>classes</b> — Middle, High, or Low. The class decides how tones work later. Tap any card to hear it and see details.</p>
@@ -879,6 +904,67 @@ segHandler("rm",v=>root.dataset.motion=v==="on"?"reduced":"");
 segHandler("dx",v=>root.dataset.dyslexic=v==="on"?"on":"");
 segHandler("tf",v=>root.dataset.thaifont=v==="modern"?"modern":"");
 
+/* ================= QUICK START (v3.1) ================= */
+const QS_VOWELS=[
+ {key:"aa",glyph:"า",before:false,r:"aa"},
+ {key:"ii",glyph:"ี",before:false,r:"ii"},
+ {key:"ai",glyph:"ไ",before:true,r:"ai"}
+];
+const QS_MATRIX=[
+ {c:"ก",v:"aa",real:1,m:"crow / kettle"},
+ {c:"ก",v:"ii",real:0},
+ {c:"ก",v:"ai",real:0,note:"add ่ (mai ek) → ไก่ = chicken"},
+ {c:"ด",v:"aa",real:0},
+ {c:"ด",v:"ii",real:1,m:"good"},
+ {c:"ด",v:"ai",real:0,note:"add ้ (mai tho) → ได้ = can / get"},
+ {c:"ต",v:"aa",real:1,m:"eye / grandfather"},
+ {c:"ต",v:"ii",real:1,m:"to hit"},
+ {c:"ต",v:"ai",real:1,m:"kidney"},
+ {c:"น",v:"aa",real:1,m:"rice field"},
+ {c:"น",v:"ii",real:0},
+ {c:"น",v:"ai",real:0,note:"ใน (spelled with ใ, not ไ) = in — same sound, different vowel"},
+ {c:"ม",v:"aa",real:1,m:"to come"},
+ {c:"ม",v:"ii",real:1,m:"to have"},
+ {c:"ม",v:"ai",real:0,note:"add ้ (mai tho) → ไม้ = wood"},
+ {c:"ร",v:"aa",real:0},
+ {c:"ร",v:"ii",real:0},
+ {c:"ร",v:"ai",real:0,note:"becomes “อะไร” (what) later"}
+];
+function qsSyllable(c,vkey){const v=QS_VOWELS.find(x=>x.key===vkey);return v.before?v.glyph+c:c+v.glyph;}
+function qsRomin(c,vkey){const cc=CONSONANTS.find(x=>x.c===c);const v=QS_VOWELS.find(x=>x.key===vkey);return cc.s+v.r;}
+const qsWordsEl=document.getElementById("qsWords");
+QS_MATRIX.filter(x=>x.real).forEach((x,i)=>{
+  const glyph=qsSyllable(x.c,x.v),rom=qsRomin(x.c,x.v);
+  const b=document.createElement("button");
+  b.className="card";b.style.setProperty("--i",i);
+  b.setAttribute("role","listitem");
+  b.setAttribute("aria-label",`${glyph}, ${rom}, means ${x.m}. Press to hear.`);
+  b.innerHTML=`<span class="speak-ico" aria-hidden="true">🔊</span>
+    <span class="glyph thai" aria-hidden="true">${glyph}</span>
+    <span class="romin">${rom}</span>
+    <span class="hint" style="font-size:.78rem;color:var(--text-2)">${x.m}</span>`;
+  b.addEventListener("click",()=>speak(glyph,{rate:state.slow?0.6:0.85}));
+  qsWordsEl.appendChild(b);
+});
+const qsMatrixEl=document.getElementById("qsMatrix");
+QS_MATRIX.forEach((x,i)=>{
+  const glyph=qsSyllable(x.c,x.v),rom=qsRomin(x.c,x.v);
+  const b=document.createElement("button");
+  b.className="card qs-cell";b.style.setProperty("--i",i);
+  b.setAttribute("role","listitem");
+  const tagTxt=x.real?`real word — ${x.m}`:"practice syllable"+(x.note?`. ${x.note}`:"");
+  b.setAttribute("aria-label",`${glyph}, ${rom}, ${tagTxt}. Press to hear.`);
+  b.innerHTML=`<span class="glyph thai" aria-hidden="true" style="font-size:1.6rem">${glyph}</span>
+    <span class="romin" style="font-size:.82rem">${rom}</span>
+    ${x.real?`<span class="qs-tag real">✓ ${x.m}</span>`:`<span class="qs-tag practice">practice</span>`}
+    ${x.note?`<span class="hint" style="font-size:.66rem;color:var(--text-3);margin-top:.1rem">${x.note}</span>`:""}`;
+  b.addEventListener("click",()=>speak(glyph,{rate:state.slow?0.6:0.85}));
+  qsMatrixEl.appendChild(b);
+});
+document.getElementById("qsToConsonants").addEventListener("click",()=>{
+  selectTab(document.getElementById("tab-consonants"));
+});
+
 /* ================= CONSONANT GRID ================= */
 const cGrid=document.getElementById("consonantGrid");
 function renderConsonants(filter="all"){
@@ -942,13 +1028,13 @@ VOWEL_PAIRS.forEach(p=>{
   d.className="vcard";d.setAttribute("role","listitem");
   d.innerHTML=`<h3>${p.t} sounds</h3>
     <div class="vpair">
-      <button class="vhalf" aria-label="Short vowel ${p.short.r}, IPA ${p.short.ipa}, sounds like ${p.short.h}. Press to hear.">
+      <button class="vhalf" aria-label="Short vowel ${p.short.r}, sounds like ${p.short.h}. Press to hear.">
         <span class="lbl">Short</span><span class="glyph thai" aria-hidden="true">${p.short.g}</span>
-        <span class="romin">${p.short.r} <span class="ipa" aria-hidden="true">/${p.short.ipa}/</span></span><span class="hint">${p.short.h}</span>
+        <span class="romin">${p.short.r}</span><span class="hint">${p.short.h}</span>
       </button>
-      <button class="vhalf" aria-label="Long vowel ${p.long.r}, IPA ${p.long.ipa}, sounds like ${p.long.h}. Press to hear.">
+      <button class="vhalf" aria-label="Long vowel ${p.long.r}, sounds like ${p.long.h}. Press to hear.">
         <span class="lbl">Long</span><span class="glyph thai" aria-hidden="true">${p.long.g}</span>
-        <span class="romin">${p.long.r} <span class="ipa" aria-hidden="true">/${p.long.ipa}/</span></span><span class="hint">${p.long.h}</span>
+        <span class="romin">${p.long.r}</span><span class="hint">${p.long.h}</span>
       </button>
     </div>`;
   const[bs,bl]=d.querySelectorAll("button");
