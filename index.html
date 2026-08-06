@@ -232,11 +232,14 @@ section[role="tabpanel"][hidden]{display:none}
 .qs-glegend .dot.vowel{background:var(--high-c);border-radius:2px;transform:rotate(45deg)}
 .qs-glegend .dot.real{background:var(--low-c)}
 .qs-glegend .dot.practice{background:var(--surface-2);border:1.5px dashed var(--text-3)}
-.qs-graph-svg{display:block;width:100%;height:auto;aspect-ratio:800/560;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.qs-graph-svg{display:block;width:100%;height:auto;aspect-ratio:800/560;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);touch-action:none}
 .qs-graph-edges line{stroke:var(--border);stroke-width:1.2;transition:stroke .2s,stroke-width .2s}
 .qs-graph-edges line.qs-edge-on{stroke:var(--accent);stroke-width:2.4}
-.qs-node{cursor:pointer;transition:opacity .2s}
+.qs-node{cursor:grab;transition:opacity .25s}
+.qs-node:active{cursor:grabbing}
 .qs-node.dim{opacity:.15}
+.qs-node-inner{transition:transform .18s cubic-bezier(.2,.8,.3,1)}
+.qs-node:hover .qs-node-inner,.qs-node:focus-visible .qs-node-inner{transform:scale(1.14)}
 .qs-node .qs-shape{stroke:var(--surface);stroke-width:2}
 .qs-node-consonant .qs-shape{fill:var(--accent)}
 .qs-node-vowel .qs-shape{fill:var(--high-c)}
@@ -245,6 +248,7 @@ section[role="tabpanel"][hidden]{display:none}
 .qs-node-label{font-size:13px;fill:var(--bg);pointer-events:none;font-weight:700}
 .qs-node-practice .qs-node-label{fill:var(--text)}
 .qs-node:focus-visible .qs-shape{stroke:var(--gold);stroke-width:3}
+@media(prefers-reduced-motion:reduce){.qs-node-inner{transition:none}}
 
 /* vowel cards */
 .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.8rem}
@@ -583,7 +587,7 @@ body.entered .section-intro{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
     <button class="chip" id="qsGraphToggle" type="button" aria-expanded="false" aria-controls="qsGraphPanel">🕸️ Show the Sound Map (bonus — see how they connect)</button>
   </div>
   <div id="qsGraphPanel" hidden>
-    <p style="text-align:center;font-size:.82rem;color:var(--text-2);margin-top:.8rem">Just for fun — a visual map of how consonants and vowels combine. Not required for learning; the list below has the same information as text.</p>
+    <p style="text-align:center;font-size:.82rem;color:var(--text-2);margin-top:.8rem">Just for fun — a living map of how consonants and vowels combine. Drag any node to move it, click to hear it. Not required for learning; the list below has the same information as text.</p>
     <div class="qs-graph-legend">
       <span class="qs-glegend"><span class="dot consonant" aria-hidden="true"></span>Consonant</span>
       <span class="qs-glegend"><span class="dot vowel" aria-hidden="true"></span>Vowel</span>
@@ -1028,40 +1032,59 @@ document.getElementById("qsToConsonants").addEventListener("click",()=>{
     const consonants=[...new Set(QS_MATRIX.map(x=>x.c))];
     const vowelKeys=QS_VOWELS.map(v=>v.key);
     const nodes=[];
-    consonants.forEach((c,i)=>nodes.push({id:"c:"+c,type:"consonant",label:c,x:W*0.28+((i%3)*30),y:H*0.25+Math.floor(i/3)*180+(Math.random()-.5)*40}));
-    vowelKeys.forEach((v,i)=>nodes.push({id:"v:"+v,type:"vowel",label:QS_VOWELS.find(x=>x.key===v).glyph,x:W*0.74+((i%2)*30),y:H*0.3+i*140+(Math.random()-.5)*40}));
-    QS_MATRIX.forEach((x,i)=>nodes.push({id:"w:"+i,type:x.real?"real":"practice",label:qsSyllable(x.c,x.v),meaning:x.m,x:W/2+(Math.random()-.5)*220,y:H/2+(Math.random()-.5)*260}));
+    consonants.forEach((c,i)=>nodes.push({id:"c:"+c,type:"consonant",label:c,x:W*0.28+((i%3)*30),y:H*0.25+Math.floor(i/3)*180+(Math.random()-.5)*40,vx:0,vy:0}));
+    vowelKeys.forEach((v,i)=>nodes.push({id:"v:"+v,type:"vowel",label:QS_VOWELS.find(x=>x.key===v).glyph,x:W*0.74+((i%2)*30),y:H*0.3+i*140+(Math.random()-.5)*40,vx:0,vy:0}));
+    QS_MATRIX.forEach((x,i)=>nodes.push({id:"w:"+i,type:x.real?"real":"practice",label:qsSyllable(x.c,x.v),meaning:x.m,x:W/2+(Math.random()-.5)*220,y:H/2+(Math.random()-.5)*260,vx:0,vy:0}));
     const idx={};nodes.forEach((n,i)=>idx[n.id]=i);
     const edges=[];
     QS_MATRIX.forEach((x,i)=>{edges.push({a:"c:"+x.c,b:"w:"+i});edges.push({a:"v:"+x.v,b:"w:"+i});});
 
-    function step(){
+    // per-node slow "wander" target — gives idle motion an organic, non-jittery feel
+    nodes.forEach(n=>{n.wt=Math.random()*Math.PI*2;n.wspeed=0.006+Math.random()*0.01;});
+
+    function forces(dt,live){
       for(let i=0;i<nodes.length;i++){
         for(let j=i+1;j<nodes.length;j++){
           const a=nodes[i],b=nodes[j];
           let dx=a.x-b.x,dy=a.y-b.y;
           const d2=Math.max(dx*dx+dy*dy,4);
           const d=Math.sqrt(d2);
-          const f=2400/d2;
+          const f=2400/d2*dt;
           dx/=d;dy/=d;
-          a.x+=dx*f;a.y+=dy*f;b.x-=dx*f;b.y-=dy*f;
+          if(!a.drag){a.vx+=dx*f;a.vy+=dy*f;}
+          if(!b.drag){b.vx-=dx*f;b.vy-=dy*f;}
         }
       }
       edges.forEach(e=>{
         const a=nodes[idx[e.a]],b=nodes[idx[e.b]];
         let dx=b.x-a.x,dy=b.y-a.y;
         const d=Math.sqrt(dx*dx+dy*dy)||0.01;
-        const f=(d-95)*0.02;
+        const f=(d-95)*0.03*dt;
         dx/=d;dy/=d;
-        a.x+=dx*f;a.y+=dy*f;b.x-=dx*f;b.y-=dy*f;
+        if(!a.drag){a.vx+=dx*f;a.vy+=dy*f;}
+        if(!b.drag){b.vx-=dx*f;b.vy-=dy*f;}
       });
       nodes.forEach(n=>{
-        n.x+=(W/2-n.x)*0.004;n.y+=(H/2-n.y)*0.004;
+        if(n.drag)return;
+        n.vx+=(W/2-n.x)*0.0015*dt;n.vy+=(H/2-n.y)*0.0015*dt;
+        if(live){
+          n.wt+=n.wspeed*dt;
+          n.vx+=Math.cos(n.wt)*0.045*dt;
+          n.vy+=Math.sin(n.wt*1.3)*0.045*dt;
+        }
+      });
+    }
+    function integrate(damp){
+      nodes.forEach(n=>{
+        if(n.drag)return;
+        n.vx*=damp;n.vy*=damp;
+        n.x+=n.vx;n.y+=n.vy;
         n.x=Math.max(28,Math.min(W-28,n.x));n.y=Math.max(28,Math.min(H-28,n.y));
       });
     }
     const reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    for(let k=0;k<(reduced?450:140);k++)step();
+    // settle the initial layout instantly so it never looks like a raw scatter
+    for(let k=0;k<(reduced?260:110);k++){forces(1,false);integrate(0.82);}
 
     const NS="http://www.w3.org/2000/svg";
     svgEl.setAttribute("viewBox","0 0 "+W+" "+H);
@@ -1077,13 +1100,16 @@ document.getElementById("qsToConsonants").addEventListener("click",()=>{
       return line;
     });
 
-    const nodeEls=nodes.map(n=>{
+    let activeId=null;
+    const nodeEls=nodes.map((n,ni)=>{
       const g=document.createElementNS(NS,"g");
       g.setAttribute("class","qs-node qs-node-"+n.type);
       g.setAttribute("tabindex","0");
       g.setAttribute("role","button");
       const label=n.type==="consonant"?"Consonant "+n.label:n.type==="vowel"?"Vowel "+n.label:n.type==="real"?n.label+", real word, means "+n.meaning:n.label+", practice syllable";
-      g.setAttribute("aria-label",label+". Press to hear and see connections.");
+      g.setAttribute("aria-label",label+". Press to hear and see connections. Draggable.");
+      const inner=document.createElementNS(NS,"g");
+      inner.setAttribute("class","qs-node-inner");
       let shape;
       if(n.type==="vowel"){
         shape=document.createElementNS(NS,"rect");
@@ -1095,24 +1121,61 @@ document.getElementById("qsToConsonants").addEventListener("click",()=>{
         shape.setAttribute("r",n.type==="consonant"?19:14);
       }
       shape.setAttribute("class","qs-shape");
-      g.appendChild(shape);
+      inner.appendChild(shape);
       const text=document.createElementNS(NS,"text");
       text.setAttribute("text-anchor","middle");
       text.setAttribute("dy","0.35em");
       text.setAttribute("class","qs-node-label thai");
       text.textContent=n.label;
-      g.appendChild(text);
+      inner.appendChild(text);
+      g.appendChild(inner);
       function activate(){
         const say=n.type==="consonant"?CONSONANTS.find(k=>k.c===n.label).n:n.type==="vowel"?qsVowelSay(n.id.slice(2)):n.label;
         speak(say,{rate:state.slow?0.6:0.85});
         highlight(n.id);
       }
-      g.addEventListener("click",activate);
-      g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();activate();}});
+      g.addEventListener("keydown",e=>{
+        if(e.key==="Enter"||e.key===" "){e.preventDefault();activate();}
+        const nudge=14;
+        if(e.key==="ArrowLeft"){e.preventDefault();n.x=Math.max(28,n.x-nudge);n.vx=0;}
+        if(e.key==="ArrowRight"){e.preventDefault();n.x=Math.min(W-28,n.x+nudge);n.vx=0;}
+        if(e.key==="ArrowUp"){e.preventDefault();n.y=Math.max(28,n.y-nudge);n.vy=0;}
+        if(e.key==="ArrowDown"){e.preventDefault();n.y=Math.min(H-28,n.y+nudge);n.vy=0;}
+      });
       g.addEventListener("mouseenter",()=>highlight(n.id));
       g.addEventListener("focus",()=>highlight(n.id));
-      g.addEventListener("mouseleave",clearHighlight);
-      g.addEventListener("blur",clearHighlight);
+      g.addEventListener("mouseleave",()=>{if(!n.drag)clearHighlight();});
+      g.addEventListener("blur",()=>{if(!n.drag)clearHighlight();});
+
+      // drag to move — mouse + touch, works even with prefers-reduced-motion (user-initiated, not autoplay)
+      let didDrag=false;
+      function toSvgPoint(clientX,clientY){
+        const pt=svgEl.createSVGPoint();
+        pt.x=clientX;pt.y=clientY;
+        const ctm=svgEl.getScreenCTM();
+        return ctm?pt.matrixTransform(ctm.inverse()):{x:n.x,y:n.y};
+      }
+      function pointerDown(e){
+        e.preventDefault();
+        didDrag=false;
+        n.drag=true;n.vx=0;n.vy=0;
+        g.setPointerCapture&&e.pointerId!=null&&g.setPointerCapture(e.pointerId);
+        highlight(n.id);
+        function move(ev){
+          const p=toSvgPoint(ev.clientX,ev.clientY);
+          n.x=Math.max(28,Math.min(W-28,p.x));n.y=Math.max(28,Math.min(H-28,p.y));
+          didDrag=true;
+        }
+        function up(){
+          n.drag=false;
+          window.removeEventListener("pointermove",move);
+          window.removeEventListener("pointerup",up);
+          if(!didDrag)activate();
+        }
+        window.addEventListener("pointermove",move);
+        window.addEventListener("pointerup",up);
+      }
+      g.addEventListener("pointerdown",pointerDown);
       nodeGroup.appendChild(g);
       return g;
     });
@@ -1128,14 +1191,41 @@ document.getElementById("qsToConsonants").addEventListener("click",()=>{
     render();
 
     function highlight(id){
+      activeId=id;
       const connected=new Set([id]);
       edges.forEach(e=>{if(e.a===id)connected.add(e.b);if(e.b===id)connected.add(e.a);});
       nodeEls.forEach((g,i)=>g.classList.toggle("dim",!connected.has(nodes[i].id)));
       edgeEls.forEach(line=>line.classList.toggle("qs-edge-on",line.dataset.a===id||line.dataset.b===id));
     }
     function clearHighlight(){
+      activeId=null;
       nodeEls.forEach(g=>g.classList.remove("dim"));
       edgeEls.forEach(line=>line.classList.remove("qs-edge-on"));
+    }
+
+    // continuous gentle motion — the graph stays alive instead of freezing once settled.
+    // Skipped under prefers-reduced-motion (static layout, but drag still works — that's user-initiated).
+    if(!reduced){
+      let rafId;
+      function tick(){
+        forces(1,true);
+        integrate(0.9);
+        render();
+        rafId=requestAnimationFrame(tick);
+      }
+      rafId=requestAnimationFrame(tick);
+      document.addEventListener("visibilitychange",()=>{
+        if(document.hidden){cancelAnimationFrame(rafId);}
+        else{rafId=requestAnimationFrame(tick);}
+      });
+    }else{
+      // reduced motion: still let drag feel responsive by re-rendering on demand
+      let rafId2;
+      function tickStatic(){
+        if(nodes.some(n=>n.drag)){render();}
+        rafId2=requestAnimationFrame(tickStatic);
+      }
+      rafId2=requestAnimationFrame(tickStatic);
     }
   }
 })();
